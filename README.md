@@ -4,7 +4,7 @@ A **Windows 11–style, user-friendly gaming OS**. Built on **Debian** (Bookworm
 with KDE Plasma, themed to look and feel like Windows 11, and shipped with
 everything needed to play **Steam** and **Windows (.exe)** games out of the box.
 
-> Made by Shaun. Assistant: **Dom** (Hermes).
+> Made by Shaun
 
 ---
 
