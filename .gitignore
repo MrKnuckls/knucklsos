@@ -16,3 +16,6 @@ config/bootstrap
 .idea/
 .vscode/
 .DS_Store
+
+# dev preview mockups (not part of the OS)
+previews/
