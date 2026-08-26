@@ -52,8 +52,10 @@ libvulkan1
 
 xpad
 xboxdrv
-# NVIDIA (used only if an NVIDIA GPU is present; harmless otherwise)
-nvidia-driver-550
+# NOTE: NVIDIA driver is NOT baked into the ISO (it's huge and version-specific).
+# gpu-detect.sh installs the recommended nvidia-driver on first boot via
+# `ubuntu-drivers autoinstall` (needs network on first boot). This keeps the
+# ISO smaller and avoids shipping a possibly-wrong driver version.
 # Extras
 flatpak
 gnome-software-plugin-flatpak
