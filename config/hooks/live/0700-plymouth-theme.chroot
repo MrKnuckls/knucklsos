@@ -1,0 +1,14 @@
+#!/bin/sh
+# Install the KnucklsOS Plymouth theme as default and rebuild initramfs.
+set -e
+
+THEME=/usr/share/plymouth/themes/knucklsos
+if [ -f "$THEME/knucklsos.plymouth" ]; then
+  update-alternatives --install \
+    /usr/share/plymouth/themes/default.plymouth default.plymouth \
+    "$THEME/knucklsos.plymouth" 100
+  update-alternatives --set default.plymouth "$THEME/knucklsos.plymouth"
+  if command -v update-initramfs >/dev/null 2>&1; then
+    update-initramfs -u
+  fi
+fi

@@ -1,0 +1,11 @@
+#!/bin/sh
+# Enable the KnucklsOS first-boot service. We symlink manually (instead of
+# 'systemctl enable') because systemd can't run reliably inside a build chroot.
+set -e
+
+UNIT=/etc/systemd/system/knucklsos-firstboot.service
+WANTS=/etc/systemd/system/multi-user.target.wants
+if [ -f "$UNIT" ]; then
+  mkdir -p "$WANTS"
+  ln -sf "$UNIT" "$WANTS/knucklsos-firstboot.service"
+fi

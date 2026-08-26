@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=KnucklsOS
+Description=KnucklsOS boot splash
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/knucklsos
+ScriptFile=/usr/share/plymouth/themes/knucklsos/knucklsos.script
