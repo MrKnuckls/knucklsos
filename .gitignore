@@ -5,6 +5,7 @@
 /auto
 config/binary
 config/bootstrap
+config/bootloaders
 *.buildlog
 *.iso
 *.deb
