@@ -41,12 +41,19 @@ lb config noauto \
 echo "==> Config written. Preparing syslinux boot files..."
 # WORKAROUND: the Ubuntu live-build fork copies isolinux boot files from
 # /root/isolinux/, but on the CI runner syslinux installs them under
-# /usr/lib/ISOLINUX/ and /usr/lib/syslinux/modules/bios/. Gather everything
-# into /root/isolinux/ so the ISO binary stage can find isolinux.bin,
-# vesamenu.c32, ldlinux.c32, etc.
+# /usr/lib/ISOLINUX/ and /usr/lib/syslinux/modules/bios/. (isolinux is now
+# installed in the CI apt step, so these exist before lb build runs.)
+# Gather everything into /root/isolinux/ so the ISO binary stage can find
+# isolinux.bin, vesamenu.c32, ldlinux.c32, etc. Fall back to a broad find.
 mkdir -p /root/isolinux
 for d in /usr/lib/ISOLINUX /usr/lib/syslinux/modules/bios /usr/lib/syslinux /usr/share/syslinux; do
     [ -d "$d" ] && cp -af "$d"/. /root/isolinux/ 2>/dev/null
+done
+# Last-resort: locate any isolinux.bin / vesamenu.c32 on the host and copy them
+for f in isolinux.bin vesamenu.c32 ldlinux.c32 libcom32.c32 libutil.c32; do
+    [ -e "/root/isolinux/$f" ] && continue
+    found=$(find / -name "$f" 2>/dev/null | head -1)
+    [ -n "$found" ] && cp -af "$found" "/root/isolinux/$f"
 done
 ls -l /root/isolinux/isolinux.bin /root/isolinux/vesamenu.c32 2>&1 || true
 

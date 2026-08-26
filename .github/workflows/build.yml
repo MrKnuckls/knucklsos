@@ -21,7 +21,7 @@ jobs:
         run: |
           set -x
           sudo apt-get update 2>&1 | tee -a install.log
-          sudo apt-get install -y live-build debootstrap cpio squashfs-tools xorriso apt-utils 2>&1 | tee -a install.log
+          sudo apt-get install -y live-build debootstrap cpio squashfs-tools xorriso apt-utils isolinux syslinux 2>&1 | tee -a install.log
           # WORKAROUND: Ubuntu's live-build fork (3.0~a57) fetches the kernel
           # version list from dists/<suite>/Contents-amd64.gz, but Debian moved
           # that file to dists/<suite>/main/Contents-amd64.gz (404 -> build fails).
