@@ -37,14 +37,15 @@ jobs:
           done
           echo "=== verify patch ==="
           sudo find / -name 'lb_chroot_linux-image' -exec grep -n 'Contents' {} \; 2>/dev/null | sudo tee -a install.log
-          # WORKAROUND 2: lb_binary_syslinux copies isolinux boot files from
-          # /root/isolinux/ (empty on the runner). The path is the
-          # LB_SYSLINUX_PATH variable. Set it via --syslinux-path in lb config
-          # AND patch the script file directly (Ubuntu fork default is wrong).
-          sudo find / -path '*/live/build/*' -name '*syslinux*' 2>/dev/null | sudo tee -a install.log
-          sudo sed -i 's#/root/isolinux#/usr/lib/ISOLINUX#g' /usr/lib/live/build/lb_binary_syslinux 2>/dev/null
-          sudo sed -i 's#LB_SYSLINUX_PATH:-/root/isolinux#LB_SYSLINUX_PATH:-/usr/lib/ISOLINUX#g' /usr/lib/live/build/lb_binary_syslinux 2>/dev/null
-          sudo grep -n 'isolinux' /usr/lib/live/build/lb_binary_syslinux 2>/dev/null | sudo tee -a install.log
+          # WORKAROUND 2: some live-build script copies isolinux boot files
+          # from /root/isolinux/ (empty on the runner). Find exactly which
+          # script/line references it. Diagnose first, then patch.
+          echo "=== grep isolinux.bin across all live-build scripts ==="
+          sudo grep -rn 'isolinux.bin\|/root/isolinux\|SYSLINUX_PATH' /usr/lib/live /usr/share/live 2>/dev/null | sudo tee -a install.log
+          # Best-effort patch: replace any hardcoded /root/isolinux in scripts.
+          sudo grep -rl '/root/isolinux' /usr/lib/live /usr/share/live 2>/dev/null | while read -r f; do
+            sudo sed -i 's#/root/isolinux#/usr/lib/ISOLINUX#g' "$f"; echo "patched $f"
+          done
           [ -f /usr/lib/ISOLINUX/vesamenu.c32 ] || \
             sudo cp -af /usr/lib/syslinux/modules/bios/vesamenu.c32 /usr/lib/ISOLINUX/ 2>/dev/null
           echo "=== syslinux source check ==="
