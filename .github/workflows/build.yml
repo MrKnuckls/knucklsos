@@ -38,24 +38,29 @@ jobs:
           echo "=== verify patch ==="
           sudo find / -name 'lb_chroot_linux-image' -exec grep -n 'Contents' {} \; 2>/dev/null | sudo tee -a install.log
           # WORKAROUND 2 (root cause): live-build's lb_binary_syslinux copies
-          # boot files from /usr/share/live/build/bootloaders/isolinux, but on
-          # the Ubuntu fork that dir lacks isolinux.bin / vesamenu.c32. Populate
-          # it with the real syslinux binaries (GitHub runs with set -e, so we
-          # must not let any single cp abort the step -> use || true).
+          # boot files from ${LIVE_BUILD}/bootloaders/isolinux. LIVE_BUILD is
+          # /usr/lib/live on this fork (scripts live there), NOT
+          # /usr/share/live/build. That dir lacks isolinux.bin/vesamenu.c32,
+          # so chroot/root/isolinux is incomplete and the later cp of
+          # /root/isolinux/isolinux.bin fails. Populate BOTH possible locations
+          # with the real syslinux binaries (GitHub runs with set -e, so we
+          # must not let any single cp abort the step -> set +e).
           set +e
-          sudo mkdir -p /usr/share/live/build/bootloaders/isolinux
-          for f in isolinux.bin vesamenu.c32 ldlinux.c32 libcom32.c32 libutil.c32; do
-            for d in /usr/lib/ISOLINUX /usr/lib/syslinux/modules/bios /usr/share/syslinux /usr/lib/syslinux; do
-              if [ -f "$d/$f" ]; then
-                sudo cp -f "$d/$f" /usr/share/live/build/bootloaders/isolinux/ 2>/dev/null
-                break
-              fi
+          for base in /usr/lib/live /usr/share/live/build; do
+            sudo mkdir -p "$base/bootloaders/isolinux"
+            for f in isolinux.bin vesamenu.c32 ldlinux.c32 libcom32.c32 libutil.c32; do
+              for d in /usr/lib/ISOLINUX /usr/lib/syslinux/modules/bios /usr/share/syslinux /usr/lib/syslinux; do
+                if [ -f "$d/$f" ]; then
+                  sudo cp -f "$d/$f" "$base/bootloaders/isolinux/" 2>/dev/null
+                  break
+                fi
+              done
             done
+            sudo cp -rf /usr/lib/syslinux/modules/bios/. "$base/bootloaders/isolinux/" 2>/dev/null
           done
-          sudo cp -rf /usr/lib/syslinux/modules/bios/. /usr/share/live/build/bootloaders/isolinux/ 2>/dev/null
-          sudo mkdir -p /usr/share/live/build/bootloaders/grub
-          echo "=== bootloaders/isolinux contents ==="
-          ls -l /usr/share/live/build/bootloaders/isolinux/ 2>&1 | sudo tee -a install.log
+          sudo mkdir -p /usr/lib/live/bootloaders/grub /usr/share/live/build/bootloaders/grub
+          echo "=== /usr/lib/live/bootloaders/isolinux contents ==="
+          ls -l /usr/lib/live/bootloaders/isolinux/ 2>&1 | sudo tee -a install.log
 
       - name: Build ISO
         run: sudo ./build.sh
