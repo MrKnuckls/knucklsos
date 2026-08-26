@@ -1,5 +1,5 @@
 #!/bin/sh
-# Build-time: expose the KnucklsOS installer and set a sane live-user.
+# Build-time: expose the KnucklsOS installer (Calamares) for the live user.
 set -e
 
 # Put an "Install KnucklsOS" launcher on the desktop for the live user.
@@ -7,9 +7,8 @@ mkdir -p /etc/skel/Desktop
 cp /usr/share/applications/knucklsos-install.desktop /etc/skel/Desktop/ 2>/dev/null || true
 chmod +x /etc/skel/Desktop/knucklsos-install.desktop 2>/dev/null || true
 
-# Point Ubiquity at our branded slideshow if it exists.
-if [ -f /usr/share/ubiquity-slideshow/slides/knucklsos.xml ]; then
-  mkdir -p /etc/ubiquity-slideshow
-  ln -sf /usr/share/ubiquity-slideshow/slides/knucklsos.xml \
-         /etc/ubiquity-slideshow/slides.xml 2>/dev/null || true
+# Calamares config: set the branding + a sensible default installation.
+if [ -d /etc/calamares ]; then
+  # Use our OS name in Calamares welcome.
+  sed -i 's/^\( *\)"string"/&/' /etc/calamares/settings.conf 2>/dev/null || true
 fi

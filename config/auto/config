@@ -1,19 +1,19 @@
 #!/bin/sh
-# live-build configuration for KnucklsOS
+# live-build configuration for KnucklsOS (Debian-based, reliably automated)
 set -e
 
 lb config noauto \
-    --mode ubuntu \
-    --distribution noble \
+    --mode debian \
+    --distribution bookworm \
     --architectures amd64 \
-    --archive-areas "main restricted universe multiverse" \
-    --parent-archive-areas "main restricted universe multiverse" \
+    --archive-areas "main contrib non-free non-free-firmware" \
+    --parent-archive-areas "main contrib non-free non-free-firmware" \
     --apt-indices false \
     --apt-recommends true \
     --binary-images iso-hybrid \
-    --bootappend-live "boot=live components quiet splash live-user=knucklsos nouveau.modeset=1" \
+    --bootappend-live "boot=live components quiet splash live-user=knucklsos" \
     --bootappend-live-failsafe "boot=live components memtest noapic noapm nodma nomce nolapic nomodeset nosmp nosplash vga=788 live-user=knucklsos" \
-    --linux-packages "linux-generic" \
+    --linux-packages "linux-image-amd64" \
     --initramfs-compression gzip \
     --image-name knucklsos \
     --iso-application "KnucklsOS" \

@@ -4,7 +4,7 @@ set -e
 
 if [ -f /etc/os-release ]; then
   sed -i 's/^NAME=.*/NAME="KnucklsOS"/' /etc/os-release
-  sed -i 's/^PRETTY_NAME=.*/PRETTY_NAME="KnucklsOS 1.0 (Noble)"/' /etc/os-release
+  sed -i 's/^PRETTY_NAME=.*/PRETTY_NAME="KnucklsOS 1.0"/' /etc/os-release
   grep -q '^ID=knucklsos' /etc/os-release || echo 'ID=knucklsos' >> /etc/os-release
 fi
 

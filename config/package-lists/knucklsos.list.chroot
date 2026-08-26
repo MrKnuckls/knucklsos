@@ -1,6 +1,6 @@
-# KnucklsOS package list (live-build: *.list.chroot)
-# Base + desktop
-linux-generic
+# KnucklsOS package list (Debian live-build: *.list.chroot)
+# Debian base + KDE Plasma (Win11-style desktop)
+linux-image-amd64
 kde-plasma-desktop
 sddm
 plasma-nm
@@ -13,19 +13,8 @@ breeze-gtk-theme
 papirus-icon-theme
 fonts-noto-core
 fonts-liberation
-# Browser: Google Chrome is fetched as a real .deb by hook 0500 (avoids the
-# Noble chromium snap transitional package, which fails inside a chroot).
-# Boot splash + first-boot
-plymouth-themes
-# Disk installer (Ubuntu's Ubiquity; integrates with live-build --debian-installer live)
-ubiquity
-ubiquity-frontend-kde
-os-prober
-# GPU auto-detect deps
-ubuntu-drivers-common
-pciutils
-polkit-kde-agent-1
-# Gaming stack
+# Browser: Google Chrome fetched as a real .deb by hook 0500
+# Gaming stack (all available on Debian)
 steam
 lutris
 wine
@@ -41,21 +30,22 @@ libvulkan1:i386
 libgl1:i386
 libglx-mesa0:i386
 # --- CPU + GPU hardware support (Intel i5 / AMD graphics) ---
-# CPU microcode: stability & security fixes for Intel and AMD.
 intel-microcode
 amd64-microcode
-# Mesa open drivers (already cover AMD GPUs and Intel integrated graphics).
 libgl1-mesa-dri
 mesa-va-drivers
-# Vulkan + video accel for AMD and Intel.
 libvulkan1
-
-xpad
-xboxdrv
-# NOTE: NVIDIA driver is NOT baked into the ISO (it's huge and version-specific).
-# gpu-detect.sh installs the recommended nvidia-driver on first boot via
-# `ubuntu-drivers autoinstall` (needs network on first boot). This keeps the
-# ISO smaller and avoids shipping a possibly-wrong driver version.
+# --- NVIDIA: install the driver from non-free (Debian's reliable path) ---
+nvidia-driver
+nvidia-detect
+# Disk installer (Calamares — Debian's supported, themeable installer)
+calamares
+calamares-settings-debian
+# GPU auto-detect deps
+pciutils
+polkit-kde-agent-1
+# Boot splash + first-boot
+plymouth-themes
 # Extras
 flatpak
 gnome-software-plugin-flatpak

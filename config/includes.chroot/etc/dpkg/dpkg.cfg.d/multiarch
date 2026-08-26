@@ -1,2 +1,3 @@
 # Enable 32-bit architecture so Steam/Proton/Wine can install their i386 deps.
+# Debian syntax:
 foreign-architecture i386
