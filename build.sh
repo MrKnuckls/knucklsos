@@ -4,6 +4,12 @@
 exec > >(tee -a build.log) 2>&1
 set -euo pipefail
 
+# live-build's binary syslinux stage needs the isolinux boot files. On the CI
+# runner the Ubuntu fork looks in /root/isolinux (empty); point it at the real
+# location via the documented env var (the workflow also patches any script
+# that hardcodes the literal path).
+export LB_SYSLINUX_PATH=/usr/lib/ISOLINUX
+
 cd "$(dirname "$0")"
 
 if [ "$(id -u)" -ne 0 ]; then

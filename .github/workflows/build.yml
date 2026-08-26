@@ -37,11 +37,17 @@ jobs:
           done
           echo "=== verify patch ==="
           sudo find / -name 'lb_chroot_linux-image' -exec grep -n 'Contents' {} \; 2>/dev/null | sudo tee -a install.log
-          # WORKAROUND 2: lb_binary_syslinux copies isolinux boot files from a
-          # hardcoded /root/isolinux/ that is empty on the runner. Point it at
-          # the real syslinux location and make sure vesamenu.c32 is present.
-          sudo find / -name 'lb_binary_syslinux' -exec \
-            sudo sed -i 's#/root/isolinux#/usr/lib/ISOLINUX#g' {} \; 2>/dev/null
+          # WORKAROUND 2: lb_binary_syslinux copies isolinux boot files from
+          # /root/isolinux/ (empty on the runner). The reference may be a literal
+          # string OR the LB_SYSLINUX_PATH variable. Fix both:
+          #  (a) export LB_SYSLINUX_PATH to the real location for build.sh,
+          #  (b) sed-patch ANY installed live-build script that mentions the
+          #      literal /root/isolinux path (filename varies on this fork).
+          sudo find / -path '*/live/build/*' -name '*syslinux*' 2>/dev/null | sudo tee -a install.log
+          sudo grep -rl '/root/isolinux' /usr/lib/live /usr/share/live 2>/dev/null | while read -r f; do
+            sudo sed -i 's#/root/isolinux#/usr/lib/ISOLINUX#g' "$f"
+            echo "patched $f"
+          done
           [ -f /usr/lib/ISOLINUX/vesamenu.c32 ] || \
             sudo cp -af /usr/lib/syslinux/modules/bios/vesamenu.c32 /usr/lib/ISOLINUX/ 2>/dev/null
           echo "=== syslinux source check ==="
