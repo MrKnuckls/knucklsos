@@ -1,0 +1,14 @@
+#!/bin/sh
+# Brand the OS as KnucklsOS in /etc/os-release (cosmetic, safe).
+set -e
+
+if [ -f /etc/os-release ]; then
+  sed -i 's/^NAME=.*/NAME="KnucklsOS"/' /etc/os-release
+  sed -i 's/^PRETTY_NAME=.*/PRETTY_NAME="KnucklsOS 1.0 (Noble)"/' /etc/os-release
+  grep -q '^ID=knucklsos' /etc/os-release || echo 'ID=knucklsos' >> /etc/os-release
+fi
+
+if [ -f /etc/lsb-release ]; then
+  sed -i 's/^DISTRIB_ID=.*/DISTRIB_ID=KnucklsOS/' /etc/lsb-release
+  sed -i 's/^DISTRIB_DESCRIPTION=.*/DISTRIB_DESCRIPTION="KnucklsOS 1.0"/' /etc/lsb-release
+fi

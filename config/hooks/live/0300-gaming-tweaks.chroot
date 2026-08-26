@@ -1,0 +1,22 @@
+#!/bin/sh
+# Gaming-friendly system tweaks for KnucklsOS.
+set -e
+
+# Allow any user to use GameMode.
+groupadd -f gamemode 2>/dev/null || true
+
+# MangoHUD on by default for Steam (toggle per-game with MANGOHUD=0).
+mkdir -p /etc/skel/.config/MangoHud
+cat > /etc/skel/.config/MangoHud/MangoHud.conf <<'EOF'
+enabled=1
+fps_limit=0
+EOF
+
+# Light sysctl tuning for latency/throughput.
+cat > /etc/sysctl.d/99-knucklsos-gaming.conf <<'EOF'
+vm.swappiness=10
+net.core.default_qdisc=fq_codel
+EOF
+
+# Flathub for apps (optional but handy).
+mkdir -p /etc/skel/.local/share/flatpak/repo 2>/dev/null || true

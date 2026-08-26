@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=KnucklsOS Welcome
+Comment=Quick-start tips for KnucklsOS
+Exec=/opt/knucklsos/welcome.sh
+Icon=system-help
+Terminal=false
+Categories=System;

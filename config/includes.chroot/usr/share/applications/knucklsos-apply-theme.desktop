@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=KnucklsOS Apply Theme
+Comment=Re-apply the Windows 11-style KnucklsOS layout
+Exec=/opt/knucklsos/apply-theme.sh
+Icon=preferences-desktop-theme
+Terminal=true
+Categories=Settings;

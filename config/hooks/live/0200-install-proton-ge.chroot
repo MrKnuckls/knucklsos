@@ -1,0 +1,25 @@
+#!/bin/sh
+# Download the latest Proton-GE into the default user skeleton so every new
+# user gets it in Steam's compatibility tools. Network is required; if it
+# fails we just skip — Steam can still fetch vanilla Proton on its own.
+set -e
+
+echo "[KnucklsOS] Fetching latest Proton-GE..."
+mkdir -p /etc/skel/.steam/root/compatibilitytools.d
+
+REL=$(curl -fsSL --max-time 30 \
+  https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases/latest \
+  | grep -oP '"tag_name":\s*"\K[^"]+' | head -1) || REL=""
+
+if [ -n "$REL" ]; then
+  URL="https://github.com/GloriousEggroll/proton-ge-custom/releases/download/${REL}/${REL}.tar.gz"
+  if curl -fsSL --max-time 420 "$URL" -o /tmp/proton-ge.tar.gz; then
+    tar -xzf /tmp/proton-ge.tar.gz -C /etc/skel/.steam/root/compatibilitytools.d/
+    echo "[KnucklsOS] Installed Proton-GE $REL"
+  else
+    echo "[KnucklsOS] Proton-GE download failed; Steam will use built-in Proton."
+  fi
+else
+  echo "[KnucklsOS] Could not resolve Proton-GE release; skipping."
+fi
+rm -f /tmp/proton-ge.tar.gz

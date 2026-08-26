@@ -1,0 +1,14 @@
+{
+  "id": "org.knucklsos.desktop",
+  "name": "KnucklsOS",
+  "comment": "Windows 11 style theme for KnucklsOS",
+  "apiVersion": 2,
+  "version": "1.0",
+  "authors": ["KnucklsOS Project"],
+  "license": "GPL",
+  "desktopSettings": {
+    "org.kde.plasmashell": {
+      "Shell": { "PanelBehavior": 0 }
+    }
+  }
+}

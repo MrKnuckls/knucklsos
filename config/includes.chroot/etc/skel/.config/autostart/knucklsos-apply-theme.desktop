@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=KnucklsOS First-Run Theme
+Comment=Applies the KnucklsOS Windows 11-style layout on first login
+Exec=/opt/knucklsos/apply-theme.sh
+Icon=preferences-desktop-theme
+Terminal=false
+X-GNOME-Autostart-enabled=true
+Hidden=false

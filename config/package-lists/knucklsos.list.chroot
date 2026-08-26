@@ -1,0 +1,43 @@
+# KnucklsOS package list (live-build: *.list.chroot)
+# Base + desktop
+linux-generic
+kde-plasma-desktop
+sddm
+plasma-nm
+plasma-pa
+dolphin
+konsole
+kdeconnect
+breeze
+breeze-gtk-theme
+papirus-icon-theme
+fonts-noto-core
+fonts-liberation
+# Browser: Google Chrome is fetched as a real .deb by hook 0500 (avoids the
+# Noble chromium snap transitional package, which fails inside a chroot).
+# Gaming stack
+steam
+lutris
+wine
+wine64
+wine32:i386
+gamemode
+mangohud
+vulkan-tools
+mesa-vulkan-drivers
+mesa-vulkan-drivers:i386
+mesa-utils
+libvulkan1:i386
+libgl1:i386
+libglx-mesa0:i386
+xpad
+xboxdrv
+# NVIDIA (used only if an NVIDIA GPU is present; harmless otherwise)
+nvidia-driver-550
+# Extras
+flatpak
+gnome-software-plugin-flatpak
+unzip
+curl
+wget
+ca-certificates

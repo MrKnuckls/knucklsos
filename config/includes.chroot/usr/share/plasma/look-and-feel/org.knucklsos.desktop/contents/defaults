@@ -1,0 +1,12 @@
+[PlasmaLookAndFeel]
+showHelp=false
+
+[org.kde.plasmashell]
+Shell=org.kde.plasma.desktop
+
+[org.kde.kdecoration2]
+BorderSize=Normal
+BorderlessMaximizedWindows=true
+
+[kwinrc]
+Plugins=blurEnabled=true

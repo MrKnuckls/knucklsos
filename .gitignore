@@ -1,0 +1,18 @@
+# live-build build artifacts (regenerated on build)
+/build/
+/binary*
+/chroot/
+/auto
+config/binary
+config/bootstrap
+*.buildlog
+*.iso
+*.deb
+.tmp/
+
+# editor / OS noise
+*~
+*.swp
+.idea/
+.vscode/
+.DS_Store
