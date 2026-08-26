@@ -39,19 +39,23 @@ jobs:
           sudo find / -name 'lb_chroot_linux-image' -exec grep -n 'Contents' {} \; 2>/dev/null | sudo tee -a install.log
           # WORKAROUND 2 (root cause): live-build's lb_binary_syslinux copies
           # boot files from /usr/share/live/build/bootloaders/isolinux, but on
-          # the Ubuntu fork that dir lacks isolinux.bin / vesamenu.c32 (they
-          # ship in /usr/lib/ISOLINUX and /usr/lib/syslinux/modules/bios).
-          # Populate the bootloaders dir with the real syslinux binaries so the
-          # copy into chroot/root/isolinux is complete.
+          # the Ubuntu fork that dir lacks isolinux.bin / vesamenu.c32. Populate
+          # it with the real syslinux binaries (GitHub runs with set -e, so we
+          # must not let any single cp abort the step -> use || true).
+          set +e
           sudo mkdir -p /usr/share/live/build/bootloaders/isolinux
-          sudo cp -af /usr/lib/ISOLINUX/. /usr/share/live/build/bootloaders/isolinux/ 2>/dev/null
-          sudo cp -af /usr/lib/syslinux/modules/bios/. /usr/share/live/build/bootloaders/isolinux/ 2>/dev/null
-          [ -f /usr/lib/ISOLINUX/vesamenu.c32 ] || \
-            sudo cp -af /usr/lib/syslinux/modules/bios/vesamenu.c32 /usr/lib/ISOLINUX/ 2>/dev/null
+          for f in isolinux.bin vesamenu.c32 ldlinux.c32 libcom32.c32 libutil.c32; do
+            for d in /usr/lib/ISOLINUX /usr/lib/syslinux/modules/bios /usr/share/syslinux /usr/lib/syslinux; do
+              if [ -f "$d/$f" ]; then
+                sudo cp -f "$d/$f" /usr/share/live/build/bootloaders/isolinux/ 2>/dev/null
+                break
+              fi
+            done
+          done
+          sudo cp -rf /usr/lib/syslinux/modules/bios/. /usr/share/live/build/bootloaders/isolinux/ 2>/dev/null
+          sudo mkdir -p /usr/share/live/build/bootloaders/grub
           echo "=== bootloaders/isolinux contents ==="
           ls -l /usr/share/live/build/bootloaders/isolinux/ 2>&1 | sudo tee -a install.log
-          # Also make sure the grub bootloader dir exists (grub stage runs too).
-          sudo mkdir -p /usr/share/live/build/bootloaders/grub
 
       - name: Build ISO
         run: sudo ./build.sh
