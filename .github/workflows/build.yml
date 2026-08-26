@@ -3,6 +3,10 @@ name: Build KnucklsOS ISO
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '*.md'
+      - 'README'
+      - 'previews/**'
   workflow_dispatch:
 
 jobs:
