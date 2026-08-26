@@ -7,19 +7,28 @@ set -e
 echo "[KnucklsOS] Fetching latest Proton-GE..."
 mkdir -p /etc/skel/.steam/root/compatibilitytools.d
 
-REL=$(curl -fsSL --max-time 30 \
-  https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases/latest \
-  | grep -oP '"tag_name":\s*"\K[^"]+' | head -1) || REL=""
+TMPFILE=$(mktemp /tmp/proton-ge.XXXXXX.tar.gz 2>/dev/null || echo /tmp/proton-ge.tar.gz)
+trap 'rm -f "$TMPFILE"' EXIT
+
+REL=""
+if command -v jq >/dev/null 2>&1; then
+  REL=$(curl -fsSL --max-time 30 https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases/latest | jq -r '.tag_name // empty') || REL=""
+else
+  REL=$(curl -fsSL --max-time 30 https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases/latest | awk -F" '/"tag_name":/ {print $4; exit}') || REL=""
+fi
 
 if [ -n "$REL" ]; then
   URL="https://github.com/GloriousEggroll/proton-ge-custom/releases/download/${REL}/${REL}.tar.gz"
-  if curl -fsSL --max-time 420 "$URL" -o /tmp/proton-ge.tar.gz; then
-    tar -xzf /tmp/proton-ge.tar.gz -C /etc/skel/.steam/root/compatibilitytools.d/
-    echo "[KnucklsOS] Installed Proton-GE $REL"
+  if curl -fsSL --max-time 420 "$URL" -o "$TMPFILE"; then
+    if tar -tzf "$TMPFILE" >/dev/null 2>&1; then
+      tar -xzf "$TMPFILE" -C /etc/skel/.steam/root/compatibilitytools.d/
+      echo "[KnucklsOS] Installed Proton-GE $REL"
+    else
+      echo "[KnucklsOS] Downloaded file is not a valid tar.gz; skipping."
+    fi
   else
     echo "[KnucklsOS] Proton-GE download failed; Steam will use built-in Proton."
   fi
 else
   echo "[KnucklsOS] Could not resolve Proton-GE release; skipping."
 fi
-rm -f /tmp/proton-ge.tar.gz
