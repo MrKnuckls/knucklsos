@@ -30,10 +30,8 @@ lb config noauto \
     --apt-recommends true \
     --binary-images iso-hybrid \
     --bootappend-live "boot=live components quiet splash live-user=knucklsos" \
-    --bootappend-live-failsafe "boot=live components memtest noapic noapm nodma nomce nolapic nomodeset nosmp nosplash vga=788 live-user=knucklsos" \
     --linux-packages "linux-image-amd64" \
     --initramfs-compression gzip \
-    --image-name knucklsos \
     --iso-application "KnucklsOS" \
     --iso-publisher "KnucklsOS Project" \
     --iso-volume "KnucklsOS" \
@@ -42,5 +40,12 @@ lb config noauto \
 echo "==> Config written. Building ISO (this can take a while)..."
 lb build
 
-echo "==> Done. ISOs:"
+echo "==> Done. Renaming ISO to knucklsos..."
+# The Ubuntu live-build fork names the ISO by --image-name (unsupported here),
+# so rename whatever *.iso was produced.
+for iso in *.iso; do
+  [ -e "$iso" ] || continue
+  mv -f "$iso" "knucklsos-$(date +%Y%m%d).iso" 2>/dev/null || mv -f "$iso" knucklsos.iso
+done
+echo "==> ISOs:"
 ls -lh knucklsos*.iso 2>/dev/null || ls -lh *.iso 2>/dev/null || echo "NO ISO PRODUCED"
