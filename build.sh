@@ -57,6 +57,13 @@ for f in isolinux.bin vesamenu.c32 ldlinux.c32 libcom32.c32 libutil.c32; do
 done
 ls -l /root/isolinux/isolinux.bin /root/isolinux/vesamenu.c32 2>&1 || true
 
+# The ISO binary stage runs INSIDE the chroot, so it looks at the chroot's
+# /root/isolinux/ (not the host's). Push the files there via includes.binary,
+# which live-build copies into the image root at binary time.
+mkdir -p config/includes.binary/root/isolinux
+cp -af /root/isolinux/. config/includes.binary/root/isolinux/ 2>/dev/null
+echo "includes.binary syslinux files:"; ls -l config/includes.binary/root/isolinux/ 2>&1 || true
+
 echo "==> Building ISO (this can take a while)..."
 lb build
 
