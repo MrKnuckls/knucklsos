@@ -21,13 +21,13 @@ jobs:
           # WORKAROUND: Ubuntu's live-build fork (3.0~a57) fetches the kernel
           # version list from dists/<suite>/Contents-amd64.gz, but Debian moved
           # that file to dists/<suite>/main/Contents-amd64.gz (404 -> build fails).
-          # Patch the installed script to use the correct path.
-          for f in /usr/lib/live/build/lb_chroot_linux-image /usr/share/live/build/lb_chroot_linux-image; do
-            if [ -f "$f" ]; then
-              sudo sed -i 's#dists/${DIST}/Contents-#dists/${DIST}/main/Contents-#g' "$f"
-              echo "patched $f"
-            fi
-          done
+          # Locate the installed script(s) and patch the URL.
+          echo "=== locating lb_chroot_linux-image ==="
+          sudo find / -name 'lb_chroot_linux-image' 2>/dev/null | sudo tee -a install.log
+          sudo find / -name 'lb_chroot_linux-image' -exec \
+            sudo sed -i 's#dists/${DIST}/Contents-#dists/${DIST}/main/Contents-#g' {} \; 2>&1 | sudo tee -a install.log
+          echo "=== verify patch ==="
+          sudo find / -name 'lb_chroot_linux-image' -exec grep -n 'Contents' {} \; 2>/dev/null | sudo tee -a install.log
 
       - name: Build ISO
         run: sudo ./build.sh
