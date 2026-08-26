@@ -31,7 +31,7 @@ lb config noauto \
     --apt-recommends true \
     --binary-images iso-hybrid \
     --bootappend-live "boot=live components quiet splash live-user=knucklsos" \
-    --linux-packages "" \
+    --linux-packages "linux-image-amd64" \
     --initramfs-compression gzip \
     --iso-application "KnucklsOS" \
     --iso-publisher "KnucklsOS Project" \

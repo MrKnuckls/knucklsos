@@ -18,6 +18,16 @@ jobs:
           set -x
           sudo apt-get update 2>&1 | tee -a install.log
           sudo apt-get install -y live-build debootstrap cpio squashfs-tools xorriso apt-utils 2>&1 | tee -a install.log
+          # WORKAROUND: Ubuntu's live-build fork (3.0~a57) fetches the kernel
+          # version list from dists/<suite>/Contents-amd64.gz, but Debian moved
+          # that file to dists/<suite>/main/Contents-amd64.gz (404 -> build fails).
+          # Patch the installed script to use the correct path.
+          for f in /usr/lib/live/build/lb_chroot_linux-image /usr/share/live/build/lb_chroot_linux-image; do
+            if [ -f "$f" ]; then
+              sudo sed -i 's#dists/${DIST}/Contents-#dists/${DIST}/main/Contents-#g' "$f"
+              echo "patched $f"
+            fi
+          done
 
       - name: Build ISO
         run: sudo ./build.sh
