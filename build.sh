@@ -1,6 +1,7 @@
 #!/bin/bash
-# KnucklsOS live-build driver.
-# Requires root. On Ubuntu 24.04: sudo apt install -y live-build
+# KnucklsOS live-build driver. Tee ALL output to build.log so CI can surface
+# errors even on early failure.
+exec > >(tee -a build.log) 2>&1
 set -euo pipefail
 
 cd "$(dirname "$0")"
@@ -13,11 +14,12 @@ fi
 echo "==> Installing live-build if missing"
 command -v lb >/dev/null 2>&1 || apt-get update && apt-get install -y live-build
 
+echo "==> live-build version:"; lb --version
 echo "==> Configuring (config/auto/config)"
 lb config
 
-echo "==> Building ISO (this takes a while: download + squashfs)..."
+echo "==> Building ISO (this can take a while)..."
 lb build
 
-echo "==> Done. Look for knucklsos*.iso in: $(pwd)"
-ls -lh knucklsos*.iso 2>/dev/null || ls -lh *.iso 2>/dev/null || true
+echo "==> Done. ISOs:"
+ls -lh knucklsos*.iso 2>/dev/null || ls -lh *.iso 2>/dev/null || echo "NO ISO PRODUCED"

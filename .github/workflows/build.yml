@@ -1,7 +1,5 @@
 name: Build KnucklsOS ISO
 
-# Builds a bootable KnucklsOS ISO on GitHub's runners (which run as root).
-# Triggers automatically on every push to main, and can be run manually.
 on:
   push:
     branches: [main]
@@ -18,29 +16,23 @@ jobs:
       - name: Install live-build
         run: |
           sudo apt-get update
-          sudo apt-get install -y live-build debootstrap ubuntu-keyring cpio squashfs-tools xorriso
+          sudo apt-get install -y live-build debootstrap ubuntu-keyring cpio squashfs-tools xorriso apt-utils apt-ftparchive
 
       - name: Build ISO
-        run: |
-          sudo ./build.sh
-          echo "=== build.sh exit: $? ==="
-          ls -lh *.iso 2>/dev/null || echo "NO ISO PRODUCED"
+        run: sudo ./build.sh
+
+      - name: Upload build log (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: knucklsos-build-log
+          path: build.log
+          retention-days: 7
 
       - name: Upload ISO artifact
-        if: always()
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: knucklsos-iso
           path: "*.iso"
           retention-days: 30
-
-      - name: Upload build log on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: knucklsos-build-log
-          path: |
-            build.log
-            *.buildlog
-            chroot/*
-          retention-days: 7
