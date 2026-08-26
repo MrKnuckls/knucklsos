@@ -1,6 +1,7 @@
 # KnucklsOS package list (Debian live-build: *.list.chroot)
 # Debian base + KDE Plasma (Win11-style desktop)
-linux-image-amd64
+# NOTE: the kernel is installed by live-build itself via --linux-packages
+# (set in build.sh), NOT listed here (listing it causes a double-arch name).
 kde-plasma-desktop
 sddm
 plasma-nm
@@ -15,7 +16,8 @@ fonts-noto-core
 fonts-liberation
 # Browser: Google Chrome fetched as a real .deb by hook 0500
 # Gaming stack (all available on Debian)
-steam
+steam-installer
+steam-devices
 lutris
 wine
 wine64
