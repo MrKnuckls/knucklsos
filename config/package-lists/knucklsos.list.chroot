@@ -16,8 +16,9 @@ fonts-noto-core
 fonts-liberation
 # Browser: Google Chrome fetched as a real .deb by hook 0500
 # Gaming stack (all available on Debian)
-steam-installer
-steam-devices
+# NOTE: steam-installer + its 32-bit deps are installed by hook
+# 1000-i386-gaming.chroot (steam-installer depends on steam-libs-i386, which
+# needs the i386 arch enabled first — that happens in the hook).
 lutris
 wine
 wine64
@@ -26,10 +27,6 @@ mangohud
 vulkan-tools
 mesa-vulkan-drivers
 mesa-utils
-# NOTE: 32-bit (i386) gaming libraries (wine32, mesa i386, libvulkan/gl i386)
-# are installed by hook 1000-i386-gaming.chroot, which enables i386 and pulls
-# them in after the main package pass (live-build's bootstrap multiarch timing
-# is unreliable on the Ubuntu fork).
 # --- CPU + GPU hardware support (Intel i5 / AMD graphics) ---
 intel-microcode
 amd64-microcode

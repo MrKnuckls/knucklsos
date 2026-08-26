@@ -3,16 +3,20 @@
 # that Steam/Proton/Wine need. Done as a chroot hook (after the main package
 # pass) because live-build's bootstrap-time multiarch enable is unreliable on
 # the Ubuntu live-build fork. Running here still lands the libs in the ISO.
+# steam-installer is installed here too because it depends on steam-libs-i386
+# (a 32-bit package) which is only available once i386 is enabled.
 set -e
 
 dpkg --add-architecture i386
 apt-get update
 
 apt-get install -y --no-install-recommends \
+    steam-installer \
+    steam-devices \
     wine32:i386 \
     mesa-vulkan-drivers:i386 \
     libvulkan1:i386 \
     libgl1:i386 \
     libglx-mesa0:i386
 
-echo "i386 gaming libraries installed."
+echo "i386 gaming libraries + Steam installed."
