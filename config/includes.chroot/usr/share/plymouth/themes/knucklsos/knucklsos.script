@@ -1,15 +1,22 @@
-# KnucklsOS Plymouth boot splash script
+# KnucklsOS Plymouth boot splash script (Option 4: avatar as loading icon)
 # Background matches the logo's solid #0a1a3f so it blends seamlessly.
 Window.SetBackgroundTopColor(0.039, 0.102, 0.247);
 Window.SetBackgroundBottomColor(0.039, 0.102, 0.247);
 
+# Real MrKnuckls GitHub avatar (verified asset) as the centered loading icon.
+avatar = Image("mrknuckls-avatar.png");
+avatar_sprite = Sprite(avatar);
+avatar_sprite.SetPosition(Window.GetWidth() / 2 - avatar.GetWidth() / 2,
+                          Window.GetHeight() / 2 - avatar.GetHeight() / 2 - 70, 0);
+
+# KNUCKLSOS wordmark (emblem + wordmark) directly below the avatar.
 logo = Image("knucklsos-logo.png");
 logo_sprite = Sprite(logo);
 logo_sprite.SetPosition(Window.GetWidth() / 2 - logo.GetWidth() / 2,
-                        Window.GetHeight() / 2 - logo.GetHeight() / 2 - 20, 0);
+                        avatar_sprite.GetY() + avatar.GetHeight() + 24, 0);
 
 # Thin progress bar that fills as boot advances.
-bar_w = 240;
+bar_w = 260;
 bar_h = 4;
 bar = Image(bar_w, bar_h);
 for (x = 0; x < bar_w; x++) {
@@ -19,7 +26,7 @@ for (x = 0; x < bar_w; x++) {
 }
 bar_sprite = Sprite(bar);
 bar_sprite.SetPosition(Window.GetWidth() / 2 - bar_w / 2,
-                       Window.GetHeight() / 2 + logo.GetHeight() / 2 + 14, 0);
+                       logo_sprite.GetY() + logo.GetHeight() + 22, 0);
 bar_sprite.SetOpacity(0.0);
 
 Plymouth.SetBootProgressFunction(fun(fraction, duration) {
