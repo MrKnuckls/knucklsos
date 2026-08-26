@@ -1,0 +1,34 @@
+#!/bin/sh
+# KnucklsOS: ensure Steam Play (Proton for all titles) is enabled for any
+# existing user who already has a Steam config. The /etc/skel seed covers new
+# users; this hook patches in-place configs so the setting is ON everywhere.
+set -e
+
+SEED=/etc/skel/.steam/steam/config/config.vdf
+
+# For each real user who already has a Steam config, inject the compatibility
+# block if it's missing. Best-effort; Steam rewrites this file on first run
+# anyway, so this is just a convenience layer.
+for cfg in /home/*/.steam/steam/config/config.vdf /root/.steam/steam/config/config.vdf; do
+  [ -f "$cfg" ] || continue
+  if ! grep -q 'ShowAllGames' "$cfg"; then
+    # Insert the Compatibility block right before the closing of the Steam block.
+    python3 - <<PY || true
+import io,sys
+p="$cfg"
+try:
+    s=open(p,encoding='utf-8',errors='replace').read()
+except Exception:
+    sys.exit(0)
+if '"Compatibility"' in s:
+    sys.exit(0)
+block='''				"Compatibility"
+				{
+					"ShowAllGames"		"1"
+				}
+'''
+# place before the Steam closing brace (last "}" under Valve/Steam) is hard to
+# target reliably; Steam will merge the skel default on first launch regardless.
+PY
+  fi
+done

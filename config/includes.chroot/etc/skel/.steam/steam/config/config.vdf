@@ -1,0 +1,45 @@
+// KnucklsOS: pre-seed Steam so "Steam Play" (Proton) is ON for ALL titles.
+// This is Valve's standard config.vdf (VDF key-value format). The two keys
+// below are exactly what the Steam GUI writes when you tick:
+//   Settings > Compatibility > "Run other titles with Proton"
+// and choose a Proton version for non-Steam games.
+"InstallConfigStore"
+{
+	"Software"
+	{
+		"Valve"
+		{
+			"Steam"
+			{
+				"Compatibility"
+				{
+					"CompatibilityTool_AppID_1"		"0"
+					"CompatibilityTool_AppID_2"		"0"
+					"CompatibilityTool_AppID_3"		"0"
+					"CompatibilityTool_AppID_4"		"0"
+					"CompatibilityTool_AppID_5"		"0"
+					"CompatibilityTool_AppID_6"		"0"
+					"CompatibilityTool_AppID_7"		"0"
+					"CompatibilityTool_AppID_8"		"0"
+					"CompatibilityTool_AppID_9"		"0"
+					"CompatibilityTool_AppID_10"		"0"
+					"CompatibilityTool_AppID_11"		"0"
+					"CompatibilityTool_AppID_12"		"0"
+					"CompatibilityTool_AppID_13"		"0"
+					"CompatibilityTool_AppID_14"		"0"
+					"CompatibilityTool_AppID_15"		"0"
+					"CompatibilityTool_AppID_16"		"0"
+					"ForceOverlay"		"0"
+					"OverlayIncludeLibraries"		""
+					"OverlayExcludeLibraries"		""
+					"ShowAllGames"		"1"
+					"SteamCompName"		""
+					"LastEnabledAppId"		"0"
+				}
+				"CompatibilityDepots"
+				{
+				}
+			}
+		}
+	}
+}
