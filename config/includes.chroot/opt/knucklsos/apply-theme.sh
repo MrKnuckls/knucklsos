@@ -1,7 +1,7 @@
 #!/bin/bash
 # Apply the KnucklsOS Windows-11-like desktop layout.
 # Safe to run repeatedly. Uses KDE's own tools so it won't break Plasma.
-set -e
+set -euo pipefail
 
 WALL="/usr/share/wallpapers/KnucklsOS/contents/images/knucklsos-wallpaper.png"
 LOOK="org.knucklsos.desktop"
