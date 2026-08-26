@@ -5,11 +5,22 @@
 set -e
 
 echo "[KnucklsOS] Fetching Google Chrome .deb..."
-if curl -fsSL --max-time 120 -o /tmp/chrome.deb \
-    https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb; then
-  apt-get install -y /tmp/chrome.deb || dpkg -i /tmp/chrome.deb && apt-get -fy install
-  echo "[KnucklsOS] Chrome installed."
+
+TMPDEB=$(mktemp /tmp/chrome.XXXXXX.deb 2>/dev/null || echo /tmp/chrome.deb)
+trap 'rm -f "$TMPDEB"' EXIT
+
+if curl -fsSL --max-time 120 -o "$TMPDEB" https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb; then
+  if apt-get install -y "$TMPDEB"; then
+    echo "[KnucklsOS] Chrome installed."
+  else
+    # Fallback: try dpkg then fix deps
+    if dpkg -i "$TMPDEB"; then
+      apt-get -fy install || true
+      echo "[KnucklsOS] Chrome installed via dpkg + apt-get -fy install."
+    else
+      echo "[KnucklsOS] Chrome installation failed (dpkg)."
+    fi
+  fi
 else
   echo "[KnucklsOS] Chrome download failed; user can install a browser later."
 fi
-rm -f /tmp/chrome.deb
