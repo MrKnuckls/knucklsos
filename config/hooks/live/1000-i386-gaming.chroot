@@ -1,0 +1,18 @@
+#!/bin/sh
+# Enable 32-bit (i386) architecture and install the 32-bit gaming libraries
+# that Steam/Proton/Wine need. Done as a chroot hook (after the main package
+# pass) because live-build's bootstrap-time multiarch enable is unreliable on
+# the Ubuntu live-build fork. Running here still lands the libs in the ISO.
+set -e
+
+dpkg --add-architecture i386
+apt-get update
+
+apt-get install -y --no-install-recommends \
+    wine32:i386 \
+    mesa-vulkan-drivers:i386 \
+    libvulkan1:i386 \
+    libgl1:i386 \
+    libglx-mesa0:i386
+
+echo "i386 gaming libraries installed."
