@@ -4,12 +4,6 @@
 exec > >(tee -a build.log) 2>&1
 set -euo pipefail
 
-# live-build's binary syslinux stage needs the isolinux boot files. On the CI
-# runner the Ubuntu fork looks in /root/isolinux (empty); point it at the real
-# location via the documented env var (the workflow also patches any script
-# that hardcodes the literal path).
-export LB_SYSLINUX_PATH=/usr/lib/ISOLINUX
-
 cd "$(dirname "$0")"
 
 if [ "$(id -u)" -ne 0 ]; then
@@ -44,33 +38,7 @@ lb config noauto \
     --iso-volume "KnucklsOS" \
     --checksums sha256
 
-echo "==> Config written. Preparing syslinux boot files..."
-# WORKAROUND: the Ubuntu live-build fork copies isolinux boot files from
-# /root/isolinux/, but on the CI runner syslinux installs them under
-# /usr/lib/ISOLINUX/ and /usr/lib/syslinux/modules/bios/. (isolinux is now
-# installed in the CI apt step, so these exist before lb build runs.)
-# Gather everything into /root/isolinux/ so the ISO binary stage can find
-# isolinux.bin, vesamenu.c32, ldlinux.c32, etc. Fall back to a broad find.
-mkdir -p /root/isolinux
-for d in /usr/lib/ISOLINUX /usr/lib/syslinux/modules/bios /usr/lib/syslinux /usr/share/syslinux; do
-    [ -d "$d" ] && cp -af "$d"/. /root/isolinux/ 2>/dev/null
-done
-# Last-resort: locate any isolinux.bin / vesamenu.c32 on the host and copy them
-for f in isolinux.bin vesamenu.c32 ldlinux.c32 libcom32.c32 libutil.c32; do
-    [ -e "/root/isolinux/$f" ] && continue
-    found=$(find / -name "$f" 2>/dev/null | head -1)
-    [ -n "$found" ] && cp -af "$found" "/root/isolinux/$f"
-done
-ls -l /root/isolinux/isolinux.bin /root/isolinux/vesamenu.c32 2>&1 || true
-
-# The ISO binary stage runs INSIDE the chroot, so it looks at the chroot's
-# /root/isolinux/ (not the host's). Push the files there via includes.binary,
-# which live-build copies into the image root at binary time.
-mkdir -p config/includes.binary/root/isolinux
-cp -af /root/isolinux/. config/includes.binary/root/isolinux/ 2>/dev/null
-echo "includes.binary syslinux files:"; ls -l config/includes.binary/root/isolinux/ 2>&1 || true
-
-echo "==> Building ISO (this can take a while)..."
+echo "==> Config written. Building ISO (this can take a while)..."
 lb build
 
 echo "==> Done. Renaming ISO to knucklsos..."

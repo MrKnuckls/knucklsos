@@ -37,19 +37,21 @@ jobs:
           done
           echo "=== verify patch ==="
           sudo find / -name 'lb_chroot_linux-image' -exec grep -n 'Contents' {} \; 2>/dev/null | sudo tee -a install.log
-          # WORKAROUND 2: some live-build script copies isolinux boot files
-          # from /root/isolinux/ (empty on the runner). Find exactly which
-          # script/line references it. Diagnose first, then patch.
-          echo "=== grep isolinux.bin across all live-build scripts ==="
-          sudo grep -rn 'isolinux.bin\|/root/isolinux\|SYSLINUX_PATH' /usr/lib/live /usr/share/live 2>/dev/null | sudo tee -a install.log
-          # Best-effort patch: replace any hardcoded /root/isolinux in scripts.
-          sudo grep -rl '/root/isolinux' /usr/lib/live /usr/share/live 2>/dev/null | while read -r f; do
-            sudo sed -i 's#/root/isolinux#/usr/lib/ISOLINUX#g' "$f"; echo "patched $f"
-          done
+          # WORKAROUND 2 (root cause): live-build's lb_binary_syslinux copies
+          # boot files from /usr/share/live/build/bootloaders/isolinux, but on
+          # the Ubuntu fork that dir lacks isolinux.bin / vesamenu.c32 (they
+          # ship in /usr/lib/ISOLINUX and /usr/lib/syslinux/modules/bios).
+          # Populate the bootloaders dir with the real syslinux binaries so the
+          # copy into chroot/root/isolinux is complete.
+          sudo mkdir -p /usr/share/live/build/bootloaders/isolinux
+          sudo cp -af /usr/lib/ISOLINUX/. /usr/share/live/build/bootloaders/isolinux/ 2>/dev/null
+          sudo cp -af /usr/lib/syslinux/modules/bios/. /usr/share/live/build/bootloaders/isolinux/ 2>/dev/null
           [ -f /usr/lib/ISOLINUX/vesamenu.c32 ] || \
             sudo cp -af /usr/lib/syslinux/modules/bios/vesamenu.c32 /usr/lib/ISOLINUX/ 2>/dev/null
-          echo "=== syslinux source check ==="
-          ls -l /usr/lib/ISOLINUX/isolinux.bin /usr/lib/ISOLINUX/vesamenu.c32 2>&1 | sudo tee -a install.log
+          echo "=== bootloaders/isolinux contents ==="
+          ls -l /usr/share/live/build/bootloaders/isolinux/ 2>&1 | sudo tee -a install.log
+          # Also make sure the grub bootloader dir exists (grub stage runs too).
+          sudo mkdir -p /usr/share/live/build/bootloaders/grub
 
       - name: Build ISO
         run: sudo ./build.sh
