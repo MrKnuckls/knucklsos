@@ -33,6 +33,7 @@ lb config noauto \
     --mirror-binary http://deb.debian.org/debian \
     --mirror-binary-security http://deb.debian.org/debian-security \
     --security false \
+    --syslinux-path /usr/lib/ISOLINUX \
     --apt-indices false \
     --apt-recommends true \
     --binary-images iso-hybrid \
