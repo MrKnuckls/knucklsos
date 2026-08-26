@@ -15,6 +15,14 @@ fonts-noto-core
 fonts-liberation
 # Browser: Google Chrome is fetched as a real .deb by hook 0500 (avoids the
 # Noble chromium snap transitional package, which fails inside a chroot).
+# Disk installer (Ubuntu's Ubiquity; integrates with live-build --debian-installer live)
+ubiquity
+ubiquity-frontend-kde
+os-prober
+# GPU auto-detect deps
+ubuntu-drivers-common
+pciutils
+polkit-kde-agent-1
 # Gaming stack
 steam
 lutris

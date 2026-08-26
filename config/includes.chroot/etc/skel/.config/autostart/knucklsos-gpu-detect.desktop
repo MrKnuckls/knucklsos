@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=KnucklsOS GPU Auto-Detect
+Comment=Detects GPU and enables the correct driver on first login (runs once)
+Exec=/opt/knucklsos/gpu-detect.sh
+Icon=drive-harddisk
+Terminal=false
+X-GNOME-Autostart-enabled=true
+Hidden=false

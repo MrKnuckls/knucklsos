@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- KnucklsOS installer slideshow (Ubiquity). Light, branded, gamer-focused. -->
+<slideshow>
+  <title>KnucklsOS</title>
+  <slide>
+    <text>Welcome to KnucklsOS — your Windows 11–style gaming operating system.</text>
+  </slide>
+  <slide>
+    <text>Steam, Lutris, Wine and Proton-GE come preinstalled. Sign in to Steam,
+          enable Steam Play for all titles, and just press Play.</text>
+  </slide>
+  <slide>
+    <text>Most Windows games run great out of the box. A few competitive titles
+          with kernel-level anti-cheat may not work — everything else just does.</text>
+  </slide>
+  <slide>
+    <text>Your GPU driver is detected automatically on first boot. For NVIDIA,
+          the recommended driver is installed for you.</text>
+  </slide>
+  <slide>
+    <text>KnucklsOS — made by Shaun. Powered by Ubuntu &amp; KDE Plasma.</text>
+  </slide>
+</slideshow>

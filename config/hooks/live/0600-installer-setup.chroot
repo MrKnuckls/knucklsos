@@ -1,0 +1,15 @@
+#!/bin/sh
+# Build-time: expose the KnucklsOS installer and set a sane live-user.
+set -e
+
+# Put an "Install KnucklsOS" launcher on the desktop for the live user.
+mkdir -p /etc/skel/Desktop
+cp /usr/share/applications/knucklsos-install.desktop /etc/skel/Desktop/ 2>/dev/null || true
+chmod +x /etc/skel/Desktop/knucklsos-install.desktop 2>/dev/null || true
+
+# Point Ubiquity at our branded slideshow if it exists.
+if [ -f /usr/share/ubiquity-slideshow/slides/knucklsos.xml ]; then
+  mkdir -p /etc/ubiquity-slideshow
+  ln -sf /usr/share/ubiquity-slideshow/slides/knucklsos.xml \
+         /etc/ubiquity-slideshow/slides.xml 2>/dev/null || true
+fi
