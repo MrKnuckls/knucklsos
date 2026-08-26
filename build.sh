@@ -11,14 +11,35 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-echo "==> Installing live-build if missing"
-command -v lb >/dev/null 2>&1 || apt-get update && apt-get install -y live-build
-
 echo "==> live-build version:"; lb --version
-echo "==> Configuring (config/auto/config)"
-lb config
 
-echo "==> Building ISO (this can take a while)..."
+# Configure explicitly as Debian Bookworm with a pinned mirror. We pass args
+# directly (not relying on config/auto/config being sourced) so live-build
+# cannot fall back to its ubuntu/precise default.
+echo "==> Configuring (Debian Bookworm)"
+lb config noauto \
+    --mode debian \
+    --distribution bookworm \
+    --architectures amd64 \
+    --archive-areas "main contrib non-free non-free-firmware" \
+    --parent-archive-areas "main contrib non-free non-free-firmware" \
+    --mirror-bootstrap http://deb.debian.org/debian \
+    --mirror-binary http://deb.debian.org/debian \
+    --mirror-binary-security http://security.debian.org/debian-security \
+    --apt-indices false \
+    --apt-recommends true \
+    --binary-images iso-hybrid \
+    --bootappend-live "boot=live components quiet splash live-user=knucklsos" \
+    --bootappend-live-failsafe "boot=live components memtest noapic noapm nodma nomce nolapic nomodeset nosmp nosplash vga=788 live-user=knucklsos" \
+    --linux-packages "linux-image-amd64" \
+    --initramfs-compression gzip \
+    --image-name knucklsos \
+    --iso-application "KnucklsOS" \
+    --iso-publisher "KnucklsOS Project" \
+    --iso-volume "KnucklsOS" \
+    --checksums sha256
+
+echo "==> Config written. Building ISO (this can take a while)..."
 lb build
 
 echo "==> Done. ISOs:"
