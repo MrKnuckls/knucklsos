@@ -21,7 +21,10 @@ jobs:
           sudo apt-get install -y live-build
 
       - name: Build ISO
-        run: sudo ./build.sh
+        run: |
+          sudo ./build.sh
+          echo "=== build.sh exit: $? ==="
+          ls -lh *.iso 2>/dev/null || echo "NO ISO PRODUCED"
 
       - name: Upload ISO artifact
         if: always()

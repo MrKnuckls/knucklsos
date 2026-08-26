@@ -10,8 +10,7 @@ lb config noauto \
     --parent-archive-areas "main restricted universe multiverse" \
     --apt-indices false \
     --apt-recommends true \
-    --debian-installer live \
-    --debian-installer-gui true \
+    --binary-images iso-hybrid \
     --bootappend-live "boot=live components quiet splash live-user=knucklsos nouveau.modeset=1" \
     --bootappend-live-failsafe "boot=live components memtest noapic noapm nodma nomce nolapic nomodeset nosmp nosplash vga=788 live-user=knucklsos" \
     --linux-packages "linux-generic" \
