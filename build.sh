@@ -11,7 +11,29 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-echo "==> live-build version:"; lb --version
+# Preflight: ensure required commands are available and basic environment is sane.
+missing=()
+for cmd in lb curl tar mktemp; do
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    missing+=("$cmd")
+  fi
+done
+if [ ${#missing[@]} -ne 0 ]; then
+  echo "ERROR: missing required commands: ${missing[*]}" >&2
+  echo "Install the packages that provide these (e.g. live-build, curl, tar) and re-run." >&2
+  exit 1
+fi
+
+# Optional but recommended checks
+if command -v df >/dev/null 2>&1; then
+  avail_kb=$(df --output=avail -k . | tail -n1 | tr -d '[:space:]' || echo "0")
+  # Require at least 2GB free for building ISOs (2000000 KB)
+  if [ -n "$avail_kb" ] && [ "$avail_kb" -lt 2000000 ]; then
+    echo "WARNING: less than ~2GB available on build filesystem (avail: ${avail_kb} KB). ISO build may fail or run out of space." >&2
+  fi
+fi
+
+echo "==> live-build version:"; lb --version || true
 
 # Configure explicitly as Debian Bookworm with a pinned mirror. We pass args
 # directly (not relying on config/auto/config being sourced) so live-build
