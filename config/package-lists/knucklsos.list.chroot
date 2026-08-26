@@ -40,6 +40,16 @@ mesa-utils
 libvulkan1:i386
 libgl1:i386
 libglx-mesa0:i386
+# --- CPU + GPU hardware support (Intel i5 / AMD graphics) ---
+# CPU microcode: stability & security fixes for Intel and AMD.
+intel-microcode
+amd64-microcode
+# Mesa open drivers (already cover AMD GPUs and Intel integrated graphics).
+libgl1-mesa-dri
+mesa-va-drivers
+# Vulkan + video accel for AMD and Intel.
+libvulkan1
+
 xpad
 xboxdrv
 # NVIDIA (used only if an NVIDIA GPU is present; harmless otherwise)
