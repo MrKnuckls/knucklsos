@@ -38,7 +38,19 @@ lb config noauto \
     --iso-volume "KnucklsOS" \
     --checksums sha256
 
-echo "==> Config written. Building ISO (this can take a while)..."
+echo "==> Config written. Preparing syslinux boot files..."
+# WORKAROUND: the Ubuntu live-build fork copies isolinux boot files from
+# /root/isolinux/, but on the CI runner syslinux installs them under
+# /usr/lib/ISOLINUX/ and /usr/lib/syslinux/modules/bios/. Gather everything
+# into /root/isolinux/ so the ISO binary stage can find isolinux.bin,
+# vesamenu.c32, ldlinux.c32, etc.
+mkdir -p /root/isolinux
+for d in /usr/lib/ISOLINUX /usr/lib/syslinux/modules/bios /usr/lib/syslinux /usr/share/syslinux; do
+    [ -d "$d" ] && cp -af "$d"/. /root/isolinux/ 2>/dev/null
+done
+ls -l /root/isolinux/isolinux.bin /root/isolinux/vesamenu.c32 2>&1 || true
+
+echo "==> Building ISO (this can take a while)..."
 lb build
 
 echo "==> Done. Renaming ISO to knucklsos..."
