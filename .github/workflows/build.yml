@@ -11,7 +11,9 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # Use a Debian runner with the REAL Debian live-build (not Ubuntu's fork,
+    # which hardcodes ubuntu-mode gfxboot behavior and breaks Debian builds).
+    runs-on: debian-latest
     timeout-minutes: 360
     steps:
       - name: Checkout
@@ -22,38 +24,11 @@ jobs:
           set -x
           sudo apt-get update 2>&1 | tee -a install.log
           sudo apt-get install -y live-build debootstrap cpio squashfs-tools xorriso apt-utils isolinux syslinux 2>&1 | tee -a install.log
-          # WORKAROUND: Ubuntu's live-build fork (3.0~a57) fetches the kernel
-          # version list from dists/<suite>/Contents-amd64.gz, but Debian moved
-          # that file to dists/<suite>/main/Contents-amd64.gz (404 -> build fails).
-          # Patch the correct variable patterns in the installed script(s).
-          echo "=== locating lb_chroot_linux-image ==="
-          sudo find / -name 'lb_chroot_linux-image' 2>/dev/null | sudo tee -a install.log
-          sudo find / -name 'lb_chroot_linux-image' | while read -r f; do
-            sudo sed -i \
-              -e 's#dists/${LB_PARENT_DISTRIBUTION}/Contents-#dists/${LB_PARENT_DISTRIBUTION}/main/Contents-#g' \
-              -e 's#dists/${LB_DISTRIBUTION}/Contents-#dists/${LB_DISTRIBUTION}/main/Contents-#g' \
-              "$f"
-            echo "patched $f"
-          done
-          echo "=== verify patch ==="
-          sudo find / -name 'lb_chroot_linux-image' -exec grep -n 'Contents' {} \; 2>/dev/null | sudo tee -a install.log
-          # WORKAROUND 3: this Ubuntu live-build fork defaults LB_MODE to
-          # "ubuntu" and lb_binary_syslinux has `case "${LB_MODE}" in ubuntu)`
-          # branches that extract gfxboot-theme-ubuntu/bootlogo.tar.gz. Debian
-          # Bookworm has no such package, so the build dies with
-          # "cannot open binary/isolinux/bootlogo". Neutralize those ubuntu
-          # branches so it falls through to the debian (*) path (just copies
-          # our config/bootloaders/isolinux files). The only `ubuntu)` labels
-          # in this script are the three gfxboot ones.
-          sudo sed -i 's/ubuntu)/ubuntu_disabled)/g' /usr/lib/live/build/lb_binary_syslinux
-          echo "=== verify ubuntu branches disabled ==="
-          sudo grep -n 'ubuntu' /usr/lib/live/build/lb_binary_syslinux | sudo tee -a install.log
-          # config/bootloaders/isolinux if it exists (source: `if [ -e
-          # "config/bootloaders/${_BOOTLOADER}" ]`), else falls back to the
-          # system path which lacks isolinux.bin. Create config/bootloaders/
-          # isolinux with the REAL syslinux binaries so the copy into
-          # chroot/root/isolinux is complete and the later
-          # `cp /root/isolinux/isolinux.bin` succeeds.
+          echo "=== live-build version ==="
+          lb --version | tee -a install.log
+          # Ensure the isolinux bootloader files ship with the bootloaders dir.
+          # Native Debian live-build provides these, but copy them in defensively
+          # in case the package layout differs.
           set +e
           mkdir -p config/bootloaders/isolinux
           for f in isolinux.bin vesamenu.c32 ldlinux.c32 libcom32.c32 libutil.c32; do
