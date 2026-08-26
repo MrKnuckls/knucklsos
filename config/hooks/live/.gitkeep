@@ -1,0 +1,8 @@
+#!/bin/sh
+# Ensure live hooks are executable so live-build can run them.
+# This commit sets the executable bit on all .chroot hooks in config/hooks/live.
+# Note: Git stores executable bit in the index; changing it here ensures files are
+# executable when checked out by live-build or users.
+
+# No runtime content — this file is a placeholder. The actual mode change is
+# handled by the commit metadata.
