@@ -14,7 +14,7 @@ REL=""
 if command -v jq >/dev/null 2>&1; then
   REL=$(curl -fsSL --max-time 30 https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases/latest | jq -r '.tag_name // empty') || REL=""
 else
-  REL=$(curl -fsSL --max-time 30 https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases/latest | awk -F" '/"tag_name":/ {print $4; exit}') || REL=""
+  REL=$(curl -fsSL --max-time 30 https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases/latest | awk -F'"' '/"tag_name":/ {print $4; exit}') || REL=""
 fi
 
 if [ -n "$REL" ]; then
