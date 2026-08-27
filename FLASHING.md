@@ -34,8 +34,15 @@ USB won't boot.
 2. Click **Start** → type **cmd** → open **Command Prompt**.
 3. Go to that folder (change `Downloads` to wherever you saved the files):
    ```cmd
+   REM If you used the default Downloads folder, use this:
    cd /d %USERPROFILE%\Downloads
+
+   REM Or use the literal path (replace YourName with your Windows username):
+   cd /d C:\Users\YourName\Downloads
    ```
+   (The `/d` tells cmd it's OK to change drives too. If the `cd` says "The system
+   cannot find the path", your files are somewhere else — run `dir` to see what's in
+   the current folder, or browse to the right path.)
 4. Run this single command to glue the two parts into one `.iso`:
    ```cmd
    copy /b knucklsos-20260827.iso.part00 + knucklsos-20260827.iso.part01 knucklsos-20260827.iso
