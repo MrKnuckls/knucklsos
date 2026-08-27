@@ -3,7 +3,9 @@
 set -e
 
 # Allow any user to use GameMode.
-groupadd -f gamemode 2>/dev/null || true
+if command -v groupadd >/dev/null 2>&1; then
+  groupadd -f gamemode 2>/dev/null || true
+fi
 
 # MangoHUD on by default for Steam (toggle per-game with MANGOHUD=0).
 mkdir -p /etc/skel/.config/MangoHud
