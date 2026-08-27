@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- KnucklsOS installer slideshow (Ubiquity). Light, branded, gamer-focused. -->
+<!-- KnucklsOS installer slideshow. Light, branded, gamer-focused. -->
 <slideshow>
   <title>KnucklsOS</title>
   <slide>
@@ -18,6 +18,6 @@
           the recommended driver is installed for you.</text>
   </slide>
   <slide>
-    <text>KnucklsOS — made by Shaun. Powered by Ubuntu &amp; KDE Plasma.</text>
+    <text>KnucklsOS — made by Shaun. Powered by Debian &amp; KDE Plasma.</text>
   </slide>
 </slideshow>

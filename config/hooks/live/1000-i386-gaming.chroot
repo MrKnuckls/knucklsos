@@ -1,10 +1,10 @@
 #!/bin/sh
 # Enable 32-bit (i386) architecture and install the 32-bit gaming libraries
 # that Steam/Proton/Wine need. Done as a chroot hook (after the main package
-# pass) because live-build's bootstrap-time multiarch enable is unreliable on
-# the Ubuntu live-build fork. Running here still lands the libs in the ISO.
-# steam-installer is installed here too because it depends on steam-libs-i386
-# (a 32-bit package) which is only available once i386 is enabled.
+# pass) because live-build's bootstrap-time multiarch enable is unreliable;
+# running here still lands the libs in the ISO. steam-installer is installed
+# here too because it depends on steam-libs-i386 (a 32-bit package) which is
+# only available once i386 is enabled.
 set -e
 
 dpkg --add-architecture i386
