@@ -3,7 +3,8 @@
 # Detects the user's CPU and graphics hardware and makes sure the right
 # drivers/firmware are active. AMD/Intel use Mesa (already installed). For
 # NVIDIA we ensure the preinstalled nvidia-driver is active (Debian package).
-set -e
+set -euo pipefail
+: "${HOME:=/root}"
 
 FLAG="$HOME/.cache/knucklsos/gpu-detected"
 mkdir -p "$(dirname "$FLAG")"
