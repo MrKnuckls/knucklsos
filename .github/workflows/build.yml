@@ -30,8 +30,9 @@ jobs:
           # live-build package (Ubuntu's fork is too old/broken for Debian).
           echo 'deb [trusted=yes] http://deb.debian.org/debian bookworm main' | sudo tee /etc/apt/sources.list.d/debian-bookworm.list
           sudo apt-get update 2>&1 | tee -a install.log
-          # Prefer the Debian live-build over any Ubuntu one.
-          sudo apt-get install -y -t bookworm live-build 2>&1 | tee -a install.log
+          # Prefer the Debian live-build over any Ubuntu one. Also need the
+          # Debian archive keyring so debootstrap can verify the Bookworm repo.
+          sudo apt-get install -y -t bookworm live-build debian-archive-keyring 2>&1 | tee -a install.log
           echo "=== live-build version ==="
           lb --version | tee -a install.log
           # Ensure the isolinux bootloader files ship with the bootloaders dir.
