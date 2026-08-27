@@ -12,24 +12,55 @@ artifact. This guide explains how to put it on a USB stick and boot it.
 
 ## 0. Rejoin the split ISO first (important!)
 
-The ISO is **~2.9 GB**, but GitHub caps release downloads at 2 GB per file, so it's
-published as **two** parts:
+The ISO is **~2.9 GB**, but GitHub only lets us upload files up to 2 GB each, so we
+had to split it into **two** halves:
 
-- `knucklsos-20260827.iso.part00`
-- `knucklsos-20260827.iso.part01`
+- `knucklsos-20260827.iso.part00`  (first half, ~1.5 GB)
+- `knucklsos-20260827.iso.part01`  (second half, ~1.4 GB)
 
-You **must combine them into one `.iso` before flashing** — do NOT write a `.part00`
-file to the stick, it won't boot.
+**What "rejoin" means:** the ISO is one big file that got cut in half for download.
+You need to glue the two halves back together into a single `knucklsos-20260827.iso`
+before you can flash it. Flashing a `.part00` file by itself will **not** work — the
+USB won't boot.
 
-**Download both parts, then run this in the same folder:**
+**Step by step:**
 
-```bash
-cat knucklsos-20260827.iso.part00 knucklsos-20260827.iso.part01 > knucklsos-20260827.iso
-```
+1. Download **both** `part00` and `part01` into the **same folder**.
+2. Glue them together with the command for your operating system (below).
+3. You'll get one new file: `knucklsos-20260827.iso` (~2.9 GB). That's the file you flash.
 
-You should now have a single `knucklsos-20260827.iso` (~2.9 GB). Use that file in
-the steps below. (If you'd rather not recombine, the Actions tab also offers a
-single `knucklsos-iso` artifact — but it expires after ~30 days.)
+### ▸ If you're on Windows
+1. Put both parts in a folder, e.g. your `Downloads` folder.
+2. Click Start → type **PowerShell** → open **Windows PowerShell**.
+3. Type this and press Enter (it assumes the files are in Downloads — change the
+   path if they're elsewhere):
+   ```powershell
+   cd $HOME\Downloads
+   Get-Content knucklsos-20260827.iso.part00, knucklsos-20260827.iso.part01 -Raw -Encoding Byte | Set-Content knucklsos-20260827.iso -Encoding Byte
+   ```
+4. Wait until it finishes (no progress bar — just let it run). You now have
+   `knucklsos-20260827.iso` in that folder.
+
+   > Don't have PowerShell handy? You can also install **7-Zip**, right-click the
+   > first part, and use it to concatenate — but the PowerShell way above is simplest.
+
+### ▸ If you're on macOS or Linux
+1. Open the **Terminal** (macOS: Applications → Utilities → Terminal).
+2. Go to the folder with the two parts, e.g.:
+   ```bash
+   cd ~/Downloads
+   ```
+3. Run this single command:
+   ```bash
+   cat knucklsos-20260827.iso.part00 knucklsos-20260827.iso.part01 > knucklsos-20260827.iso
+   ```
+
+### ▸ How to check it worked
+- The new `knucklsos-20260827.iso` should be about **2.9 GB** (roughly 3,103,784,960 bytes).
+- If it's only ~1.5 GB, you probably only had `part00` — re-download **both** parts
+  and try again.
+- The file should end in `.iso` (not `.part00` or `.part01`). That `.iso` is what you
+  use in the next steps.
 
 ---
 
