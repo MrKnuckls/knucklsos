@@ -30,19 +30,22 @@ USB won't boot.
 3. You'll get one new file: `knucklsos-20260827.iso` (~2.9 GB). That's the file you flash.
 
 ### ▸ If you're on Windows
-1. Put both parts in a folder, e.g. your `Downloads` folder.
-2. Click Start → type **PowerShell** → open **Windows PowerShell**.
-3. Type this and press Enter (it assumes the files are in Downloads — change the
-   path if they're elsewhere):
-   ```powershell
-   cd $HOME\Downloads
-   Get-Content knucklsos-20260827.iso.part00, knucklsos-20260827.iso.part01 -Raw -Encoding Byte | Set-Content knucklsos-20260827.iso -Encoding Byte
+1. Download **both** parts into the **same folder** (e.g. your `Downloads` folder).
+2. Click **Start** → type **cmd** → open **Command Prompt**.
+3. Go to that folder (change `Downloads` to wherever you saved the files):
+   ```cmd
+   cd /d %USERPROFILE%\Downloads
    ```
-4. Wait until it finishes (no progress bar — just let it run). You now have
-   `knucklsos-20260827.iso` in that folder.
+4. Run this single command to glue the two parts into one `.iso`:
+   ```cmd
+   copy /b knucklsos-20260827.iso.part00 + knucklsos-20260827.iso.part01 knucklsos-20260827.iso
+   ```
+   You should see `1 file(s) copied`. That `knucklsos-20260827.iso` (~2.9 GB) is your
+   flashable image.
 
-   > Don't have PowerShell handy? You can also install **7-Zip**, right-click the
-   > first part, and use it to concatenate — but the PowerShell way above is simplest.
+   > **Note:** PowerShell's `Get-Content`/`Set-Content` mangles binary files unless
+   > you use the exact right flags, so we use the plain `cmd` `copy /b` above — it
+   > joins the files byte-for-byte and works on every Windows version.
 
 ### ▸ If you're on macOS or Linux
 1. Open the **Terminal** (macOS: Applications → Utilities → Terminal).
