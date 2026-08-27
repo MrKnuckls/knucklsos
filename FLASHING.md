@@ -10,9 +10,32 @@ artifact. This guide explains how to put it on a USB stick and boot it.
 
 ---
 
+## 0. Rejoin the split ISO first (important!)
+
+The ISO is **~2.9 GB**, but GitHub caps release downloads at 2 GB per file, so it's
+published as **two** parts:
+
+- `knucklsos-20260827.iso.part00`
+- `knucklsos-20260827.iso.part01`
+
+You **must combine them into one `.iso` before flashing** — do NOT write a `.part00`
+file to the stick, it won't boot.
+
+**Download both parts, then run this in the same folder:**
+
+```bash
+cat knucklsos-20260827.iso.part00 knucklsos-20260827.iso.part01 > knucklsos-20260827.iso
+```
+
+You should now have a single `knucklsos-20260827.iso` (~2.9 GB). Use that file in
+the steps below. (If you'd rather not recombine, the Actions tab also offers a
+single `knucklsos-iso` artifact — but it expires after ~30 days.)
+
+---
+
 ## 1. What you need
 
-- A USB stick — **8 GB minimum, 16 GB recommended** (the ISO is ~2–4 GB).
+- A USB stick — **8 GB minimum, 16 GB recommended** (the ISO is ~2.9 GB).
 - A tool to write the ISO (pick one below).
 - Back up anything important on that USB — it gets wiped.
 
@@ -20,15 +43,17 @@ artifact. This guide explains how to put it on a USB stick and boot it.
 
 ## 2. Write the ISO to USB (pick one)
 
+> Use the recombined `knucklsos-20260827.iso` from Step 0 — not the `.part00` / `.part01` files.
+
 ### Option A — Ventoy (recommended, easiest)
 1. Download Ventoy from https://ventoy.net and install it to your USB stick
    (this formats the stick once).
-2. Copy the `knucklsos-*.iso` file onto the stick like a normal file.
+2. Copy the `knucklsos-20260827.iso` file onto the stick like a normal file.
 3. Done — no imaging step. You can keep many ISOs on the same stick.
 
 ### Option B — BalenaEtcher (simple GUI)
 1. Get BalenaEtcher from https://etcher.balena.io.
-2. Open it, select the `knucklsos-*.iso`, select your USB stick, click Flash.
+2. Open it, select the `knucklsos-20260827.iso`, select your USB stick, click Flash.
 3. Wait for "Flash complete" + validation.
 
 ### Option C — `dd` (command line, powerful but unforgiving)
@@ -39,7 +64,7 @@ artifact. This guide explains how to put it on a USB stick and boot it.
 lsblk
 
 # Write the ISO (replace sdX with your USB device, NOT a partition like sdX1)
-sudo dd if=knucklsos-*.iso of=/dev/sdX bs=4M status=progress oflag=sync
+sudo dd if=knucklsos-20260827.iso of=/dev/sdX bs=4M status=progress oflag=sync
 ```
 
 ---
