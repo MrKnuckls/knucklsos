@@ -11,24 +11,31 @@ on:
 
 jobs:
   build:
-    # Use a Debian runner with the REAL Debian live-build (not Ubuntu's fork,
-    # which hardcodes ubuntu-mode gfxboot behavior and breaks Debian builds).
-    runs-on: debian-latest
+    # ubuntu-latest is always available; we install the REAL Debian live-build
+    # from Debian's bookworm repo (not Ubuntu's fork, which hardcodes ubuntu-
+    # mode gfxboot behavior and breaks Debian builds).
+    runs-on: ubuntu-latest
     timeout-minutes: 360
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install live-build
+      - name: Install real Debian live-build
         run: |
           set -x
           sudo apt-get update 2>&1 | tee -a install.log
-          sudo apt-get install -y live-build debootstrap cpio squashfs-tools xorriso apt-utils isolinux syslinux 2>&1 | tee -a install.log
+          # Build tooling available on the Ubuntu runner.
+          sudo apt-get install -y debootstrap cpio squashfs-tools xorriso apt-utils isolinux syslinux wget ca-certificates 2>&1 | tee -a install.log
+          # Add Debian bookworm as a source so we can pull the native
+          # live-build package (Ubuntu's fork is too old/broken for Debian).
+          echo 'deb [trusted=yes] http://deb.debian.org/debian bookworm main' | sudo tee /etc/apt/sources.list.d/debian-bookworm.list
+          sudo apt-get update 2>&1 | tee -a install.log
+          # Prefer the Debian live-build over any Ubuntu one.
+          sudo apt-get install -y -t bookworm live-build 2>&1 | tee -a install.log
           echo "=== live-build version ==="
           lb --version | tee -a install.log
           # Ensure the isolinux bootloader files ship with the bootloaders dir.
-          # Native Debian live-build provides these, but copy them in defensively
-          # in case the package layout differs.
+          # Native Debian live-build provides these, but copy them in defensively.
           set +e
           mkdir -p config/bootloaders/isolinux
           for f in isolinux.bin vesamenu.c32 ldlinux.c32 libcom32.c32 libutil.c32; do
