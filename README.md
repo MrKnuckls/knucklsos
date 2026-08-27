@@ -28,10 +28,20 @@ run. KnucklsOS runs as many Windows/Steam games as Linux possibly can.
 ---
 
 ## Building the ISO (automated via GitHub Actions)
-Pushing to `main` triggers `.github/workflows/build.yml`, which runs
-`live-build` on GitHub's root-enabled runners and uploads `knucklsos-iso` as a
-downloadable artifact. Download it, flash to USB (Ventoy / BalenaEtcher /
-`dd`), and boot.
+Pushing to `main` triggers `.github/workflows/build.yml`, which installs the
+**native Debian live-build** on GitHub's runners and builds the ISO, then uploads
+it. There are two ways to get the ISO:
+
+- **Release (recommended, permanent):** the latest stable build is published as a
+  GitHub Release with the ISO split into two `<2 GB` chunks (GitHub's release-asset
+  limit). Download both `knucklsos-20260827.iso.part00` and `.part01`, then rejoin:
+  ```bash
+  cat knucklsos-20260827.iso.part00 knucklsos-20260827.iso.part01 > knucklsos-20260827.iso
+  ```
+  Release: https://github.com/MrKnuckls/knucklsos/releases
+- **Actions artifact (temporary, ~30-day expiry):** each build also uploads a
+  single `knucklsos-iso` artifact from the Actions tab:
+  https://github.com/MrKnuckls/knucklsos/actions
 
 > Note: the OS is **Debian**-based (not Ubuntu). Debian's `live-build` is the
 > reliably-automated builder; Steam/Proton/Lutris/Wine behave identically. If
@@ -57,10 +67,11 @@ cd knucklsos && sudo ./build.sh
 ```
 knucklsos/
 ├── .github/workflows/build.yml   # automated ISO build
-├── build.sh                       # live-build driver
+├── build.sh                       # live-build driver (lb config + lb build)
 ├── config/
-│   ├── auto/config                # lb_config (Debian/Bookworm)
-│   ├── package-lists/             # packages
-│   └── includes.chroot/           # theme, scripts, branding (distro-agnostic)
+│   ├── package-lists/             # package lists (amd64 + i386 gaming libs)
+│   ├── hooks/live/                # chroot hooks (Steam, Proton-GE, branding, plymouth, firstboot, i386 gaming)
+│   ├── includes.chroot/           # theme, scripts, branding (distro-agnostic)
+│   └── bootloaders/isolinux/      # syslinux bootloader files
 └── README.md
 ```

@@ -110,6 +110,20 @@ install.
 ## 7. Where the ISO comes from
 
 The ISO is built automatically by GitHub Actions (`.github/workflows/build.yml`)
-using `live-build` in Debian mode. Every push to `main` rebuilds it. Download
-the `knucklsos-iso` artifact from the **Actions** tab of the repo:
-https://github.com/MrKnuckls/knucklsos/actions
+using **native Debian live-build** in Debian mode. Every push to `main` rebuilds it.
+
+**Get the ISO:**
+
+- **Release (recommended, permanent):** the latest stable build is on the
+  Releases page as two split chunks (GitHub caps release assets at 2 GB, and the
+  ISO is ~2.9 GB):
+  https://github.com/MrKnuckls/knucklsos/releases
+  Download `knucklsos-20260827.iso.part00` **and** `knucklsos-20260827.iso.part01`,
+  then rejoin them into one ISO:
+  ```bash
+  cat knucklsos-20260827.iso.part00 knucklsos-20260827.iso.part01 > knucklsos-20260827.iso
+  ```
+  (After that, `knucklsos-20260827.iso` is your flashable image.)
+- **Actions artifact (temporary, ~30-day expiry):** each build also uploads a
+  single `knucklsos-iso` artifact from the Actions tab:
+  https://github.com/MrKnuckls/knucklsos/actions
