@@ -43,6 +43,12 @@ USB won't boot.
    You should see `1 file(s) copied`. That `knucklsos-20260827.iso` (~2.9 GB) is your
    flashable image.
 
+   > **Troubleshooting:** if `copy` says the file is in use or you get "Access is
+   > denied", close any program that might be reading the parts, then right-click
+   > **Command Prompt** → **Run as administrator** and try again. If it says it
+   > can't find the files, double-check you're in the right folder (step 3) — run
+   > `dir` to list what's there.
+
    > **Note:** PowerShell's `Get-Content`/`Set-Content` mangles binary files unless
    > you use the exact right flags, so we use the plain `cmd` `copy /b` above — it
    > joins the files byte-for-byte and works on every Windows version.
