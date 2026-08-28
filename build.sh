@@ -38,10 +38,17 @@ lb build
 build_rc=$?
 
 echo "==> Done. Renaming ISO..."
+# Version label follows the branch: main -> v1.0, ubuntu -> v1.1, else vX.Y from branch.
+BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
+case "$BRANCH" in
+  main)        VER="v1.0" ;;
+  ubuntu)      VER="v1.1" ;;
+  *)           VER="$BRANCH" ;;
+esac
 if [ "$build_rc" -eq 0 ]; then
   for iso in *.iso; do
     [ -e "$iso" ] || continue
-    mv -f "$iso" "knucklsos-$(date +%Y%m%d).iso" 2>/dev/null || mv -f "$iso" knucklsos.iso
+    mv -f "$iso" "knucklsos-${VER}.iso" 2>/dev/null || mv -f "$iso" knucklsos.iso
   done
   ls -lh knucklsos*.iso 2>/dev/null || ls -lh *.iso 2>/dev/null || echo "NO ISO PRODUCED"
 else
