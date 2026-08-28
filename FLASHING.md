@@ -31,7 +31,10 @@ USB won't boot.
 
 ### ▸ If you're on Windows
 1. Download **both** parts into the **same folder** (e.g. your `Downloads` folder).
-2. Click **Start** → type **cmd** → open **Command Prompt**.
+2. Open a command window — either works:
+   - **Command Prompt:** Click **Start** → type `cmd` → open **Command Prompt**, **or**
+   - **PowerShell:** Click **Start** → type `powershell` → open **Windows PowerShell**.
+   (The command in step 4 uses `cmd /c` so it works in BOTH — you don't need to pick one.)
 3. Go to that folder (change `Downloads` to wherever you saved the files):
    ```cmd
    REM If you used the default Downloads folder, use this:
@@ -45,20 +48,21 @@ USB won't boot.
    the current folder, or browse to the right path.)
 4. Run this single command to glue the two parts into one `.iso`:
    ```cmd
-   copy /b knucklsos-20260827.iso.part00 + knucklsos-20260827.iso.part01 knucklsos-20260827.iso
+   cmd /c copy /b knucklsos-20260827.iso.part00 + knucklsos-20260827.iso.part01 knucklsos-20260827.iso
    ```
    You should see `1 file(s) copied`. That `knucklsos-20260827.iso` (~2.9 GB) is your
    flashable image.
 
-   > **Troubleshooting:** if `copy` says the file is in use or you get "Access is
-   > denied", close any program that might be reading the parts, then right-click
-   > **Command Prompt** → **Run as administrator** and try again. If it says it
-   > can't find the files, double-check you're in the right folder (step 3) — run
-   > `dir` to list what's there.
+   > **Why `cmd /c`?** Windows 11 often opens PowerShell instead of Command Prompt, and
+   > in PowerShell the plain `copy` command is really `Copy-Item`, which rejects `/b`
+   > and `+` (that's the "positional parameter / invalid argument" error you may have
+   > hit). Wrapping it in `cmd /c` forces Windows to run the real Command Prompt `copy`,
+   > which joins the files byte-for-byte.
 
-   > **Note:** PowerShell's `Get-Content`/`Set-Content` mangles binary files unless
-   > you use the exact right flags, so we use the plain `cmd` `copy /b` above — it
-   > joins the files byte-for-byte and works on every Windows version.
+   > **Troubleshooting:** if it says the file is in use or "Access is denied", close any
+   > program reading the parts, then right-click the command window → **Run as
+   > administrator** and try again. If it says it can't find the files, double-check
+   > you're in the right folder (step 3) — run `dir` to list what's there.
 
 ### ▸ If you're on macOS or Linux
 1. Open the **Terminal** (macOS: Applications → Utilities → Terminal).
