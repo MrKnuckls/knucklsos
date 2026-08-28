@@ -39,6 +39,8 @@ echo "==> live-build version:"; lb --version || true
 # directly (not relying on config/auto/config being sourced) so live-build
 # cannot fall back to its ubuntu/precise default.
 echo "==> Configuring (Debian Bookworm)"
+# Clean any prior config for a reproducible rebuild
+lb clean 2>/dev/null || true
 lb config noauto \
     --mode debian \
     --distribution bookworm \
@@ -52,7 +54,7 @@ lb config noauto \
     --apt-indices false \
     --apt-recommends true \
     --binary-images iso-hybrid \
-    --bootappend-live "boot=live components quiet splash live-user=knucklsos" \
+    --bootappend-live "boot=live components quiet splash username=knucklsos" \
     --linux-packages "linux-image" \
     --initramfs-compression gzip \
     --iso-application "KnucklsOS" \
@@ -62,13 +64,21 @@ lb config noauto \
 
 echo "==> Config written. Building ISO (this can take a while)..."
 lb build
+build_rc=$?
 
 echo "==> Done. Renaming ISO to knucklsos..."
 # The Ubuntu live-build fork names the ISO by --image-name (unsupported here),
 # so rename whatever *.iso was produced.
-for iso in *.iso; do
-  [ -e "$iso" ] || continue
-  mv -f "$iso" "knucklsos-$(date +%Y%m%d).iso" 2>/dev/null || mv -f "$iso" knucklsos.iso
-done
-echo "==> ISOs:"
-ls -lh knucklsos*.iso 2>/dev/null || ls -lh *.iso 2>/dev/null || echo "NO ISO PRODUCED"
+if [ "$build_rc" -eq 0 ]; then
+  for iso in *.iso; do
+    [ -e "$iso" ] || continue
+    mv -f "$iso" "knucklsos-$(date +%Y%m%d).iso" 2>/dev/null || mv -f "$iso" knucklsos.iso
+  done
+  echo "==> ISOs:"
+  ls -lh knucklsos*.iso 2>/dev/null || ls -lh *.iso 2>/dev/null || echo "NO ISO PRODUCED"
+else
+  echo "==> BUILD FAILED (lb build rc=$build_rc) — no ISO produced" >&2
+  ls -lh *.iso 2>/dev/null || true
+fi
+
+exit $build_rc
