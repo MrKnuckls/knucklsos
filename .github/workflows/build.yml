@@ -31,12 +31,10 @@ jobs:
           # Ubuntu's --mode ubuntu hardcodes a bootloader theme
           # (syslinux-themes-ubuntu-oneiric / gfxboot-theme-ubuntu) that does
           # NOT exist in Noble, so the binary stage dies trying to apt-get
-          # install it. Patch lb_binary_syslinux to skip that theme install.
+          # install it. Patch lb_binary_syslinux to use the bundled
+          # "live-build" theme (ships with the syslinux package) instead.
           sudo find / -path '*/scripts/build/lb_binary_syslinux' 2>/dev/null | while read -r f; do
-            sudo sed -i \
-              -e 's/Install_package[[:space:]].*syslinux-themes[^ ]*/Install_package ""/' \
-              -e 's/Install_package[[:space:]].*gfxboot-theme[^ ]*/Install_package ""/' \
-              "$f"
+            sudo sed -i 's/^lb_binary_syslinux()/lb_binary_syslinux()\n\tLB_SYSLINUX_THEME="live-build"/' "$f"
             echo "patched $f"
           done
           # Ensure isolinux bits ship in the bootloaders dir (defensive copy).
