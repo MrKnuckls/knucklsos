@@ -1,66 +1,21 @@
-# KnucklsOS package list (Debian live-build: *.list.chroot)
-# Debian base + KDE Plasma (Win11-style desktop)
-# NOTE: the kernel is installed by live-build itself via --linux-packages
-# (set in build.sh), NOT listed here (listing it causes a double-arch name).
+# KnucklsOS MINIMAL package list (step 1: prove it boots on real PC).
+# Just a KDE desktop + Ubuntu's live-boot (casper). No gaming/branding yet.
 kde-plasma-desktop
 sddm
+casper
+lupin-casper
 plasma-nm
-plasma-pa
 dolphin
 konsole
-kdeconnect
 breeze
-breeze-gtk-theme
-papirus-icon-theme
-fonts-noto-core
-fonts-liberation
-# Browser: Google Chrome fetched as a real .deb by hook 0500
-# Gaming stack (all available on Debian)
-# NOTE: steam-installer + its 32-bit deps are installed by hook
-# 1000-i386-gaming.chroot (steam-installer depends on steam-libs-i386, which
-# needs the i386 arch enabled first — that happens in the hook).
-lutris
-wine
-wine64
-gamemode
-mangohud
-vulkan-tools
-mesa-vulkan-drivers
-mesa-utils
-# --- CPU + GPU hardware support (Intel i5 / AMD graphics) ---
+kdeconnect
+# Firmware: Ubuntu's linux-image-generic pulls linux-firmware automatically,
+# so Intel/AMD GPU + wifi firmware is present by default (fixes laptop black screen).
+linux-firmware
 intel-microcode
 amd64-microcode
-libgl1-mesa-dri
-mesa-va-drivers
-libvulkan1
-# Firmware: REQUIRED for Intel iGPU (i915) and AMD GPU to initialize the
-# display. Without firmware-misc-nonfree the kernel can't bring up the
-# framebuffer -> black screen on real hardware (laptops/desktops).
-firmware-linux
-firmware-linux-nonfree
-firmware-misc-nonfree
-firmware-iwlwifi
-firmware-sof-signed
-firmware-realtek
-intel-media-va-driver
-xserver-xorg-video-intel
-# --- NVIDIA: NOT installed in the live image on purpose ---
-# nvidia-driver's module/hooks fight virtual GPUs (Proxmox/VirtualBox/QEMU) and
-# can black-screen the live boot. Real NVIDIA hardware gets it automatically on
-# first boot via gpu-detect.sh (pkexec apt-get install -y nvidia-driver), so
-# users with an NVIDIA card are still covered after install.
-# Disk installer (Calamares — Debian's supported, themeable installer)
-calamares
-calamares-settings-debian
-# GPU auto-detect deps
-pciutils
-polkit-kde-agent-1
-# Boot splash + first-boot
-plymouth-themes
-# Extras
-flatpak
-gnome-software-plugin-flatpak
-unzip
+# Basic utils
 curl
 wget
 ca-certificates
+network-manager
