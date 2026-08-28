@@ -57,7 +57,7 @@ lb config noauto \
     --apt-indices false \
     --apt-recommends true \
     --binary-images iso-hybrid \
-    --bootappend-live "boot=live components quiet splash username=knucklsos nomodeset console=ttyS0" \
+    --bootappend-live "boot=live components quiet splash username=knucklsos nomodeset" \
     --linux-packages "linux-image" \
     --initramfs-compression gzip \
     --iso-application "KnucklsOS" \
