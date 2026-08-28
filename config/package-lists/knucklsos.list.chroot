@@ -33,9 +33,11 @@ amd64-microcode
 libgl1-mesa-dri
 mesa-va-drivers
 libvulkan1
-# --- NVIDIA: install the driver from non-free (Debian's reliable path) ---
-nvidia-driver
-nvidia-detect
+# --- NVIDIA: NOT installed in the live image on purpose ---
+# nvidia-driver's module/hooks fight virtual GPUs (Proxmox/VirtualBox/QEMU) and
+# can black-screen the live boot. Real NVIDIA hardware gets it automatically on
+# first boot via gpu-detect.sh (pkexec apt-get install -y nvidia-driver), so
+# users with an NVIDIA card are still covered after install.
 # Disk installer (Calamares — Debian's supported, themeable installer)
 calamares
 calamares-settings-debian
