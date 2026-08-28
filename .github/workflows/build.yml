@@ -28,13 +28,13 @@ jobs:
             casper 2>&1 | tee -a install.log
           echo "=== live-build version ==="
           lb --version | tee -a install.log
-          # Ubuntu's --mode ubuntu hardcodes a bootloader theme
-          # (syslinux-themes-ubuntu-oneiric / gfxboot-theme-ubuntu) that does
-          # NOT exist in Noble, so the binary stage dies trying to apt-get
-          # install it. Patch lb_binary_syslinux to use the bundled
-          # "live-build" theme (ships with the syslinux package) instead.
+          # Ubuntu's --mode ubuntu sets LB_SYSLINUX_THEME to a value that
+          # resolves to missing packages (syslinux-themes-ubuntu-oneiric,
+          # gfxboot-theme-ubuntu) on Noble, killing the binary stage. Force the
+          # "live-build" theme (ships with the syslinux package, no extra pkg)
+          # which also skips the gfxboot branch and uses our config/bootloaders.
           sudo find / -path '*/scripts/build/lb_binary_syslinux' 2>/dev/null | while read -r f; do
-            sudo sed -i 's/^lb_binary_syslinux()/lb_binary_syslinux()\n\tLB_SYSLINUX_THEME="live-build"/' "$f"
+            sudo sed -i 's|^# Checking depends|LB_SYSLINUX_THEME="live-build"\n\n# Checking depends|' "$f"
             echo "patched $f"
           done
           # Ensure isolinux bits ship in the bootloaders dir (defensive copy).
