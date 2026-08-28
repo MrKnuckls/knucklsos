@@ -26,10 +26,13 @@ fi
 
 # Optional but recommended checks
 if command -v df >/dev/null 2>&1; then
-  avail_kb=$(df --output=avail -k . | tail -n1 | tr -d '[:space:]' || echo "0")
-  # Require at least 2GB free for building ISOs (2000000 KB)
-  if [ -n "$avail_kb" ] && [ "$avail_kb" -lt 2000000 ]; then
-    echo "WARNING: less than ~2GB available on build filesystem (avail: ${avail_kb} KB). ISO build may fail or run out of space." >&2
+  avail_kb=$(df --output=avail -k . 2>/dev/null | tail -n1 | tr -cd '0-9')
+  # If we couldn't parse a number, skip the check (don't let an empty value
+  # trip 'set -e' on the arithmetic test below).
+  if [ -n "$avail_kb" ]; then
+    if [ "$avail_kb" -lt 2000000 ]; then
+      echo "WARNING: less than ~2GB available on build filesystem (avail: ${avail_kb} KB). ISO build may fail or run out of space." >&2
+    fi
   fi
 fi
 

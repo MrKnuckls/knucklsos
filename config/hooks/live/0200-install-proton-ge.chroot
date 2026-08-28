@@ -7,7 +7,8 @@ set -e
 echo "[KnucklsOS] Fetching latest Proton-GE..."
 mkdir -p /etc/skel/.steam/root/compatibilitytools.d
 
-TMPFILE=$(mktemp /tmp/proton-ge.XXXXXX.tar.gz 2>/dev/null || echo /tmp/proton-ge.tar.gz)
+TMPFILE=$(mktemp -t proton-ge.XXXXXX.tar.gz)
+[ -n "$TMPFILE" ] || { echo "[KnucklsOS] mktemp failed; skipping Proton-GE."; exit 0; }
 trap 'rm -f "$TMPFILE"' EXIT
 
 REL=""

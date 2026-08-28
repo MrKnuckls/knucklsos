@@ -6,7 +6,8 @@ set -e
 
 echo "[KnucklsOS] Fetching Google Chrome .deb..."
 
-TMPDEB=$(mktemp /tmp/chrome.XXXXXX.deb 2>/dev/null || echo /tmp/chrome.deb)
+TMPDEB=$(mktemp -t chrome.XXXXXX.deb)
+[ -n "$TMPDEB" ] || { echo "[KnucklsOS] mktemp failed; skipping Chrome."; exit 0; }
 trap 'rm -f "$TMPDEB"' EXIT
 
 if curl -fsSL --max-time 120 -o "$TMPDEB" https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb; then

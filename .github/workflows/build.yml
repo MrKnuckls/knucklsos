@@ -47,7 +47,13 @@ jobs:
               fi
             done
           done
-          cp -rf /usr/lib/syslinux/modules/bios/. config/bootloaders/isolinux/ 2>/dev/null
+          if [ -d /usr/lib/syslinux/modules/bios ]; then
+            cp -rf /usr/lib/syslinux/modules/bios/. config/bootloaders/isolinux/ && \
+              echo "copied extra syslinux modules" || \
+              echo "WARNING: could not copy syslinux modules (non-fatal)"
+          else
+            echo "NOTE: /usr/lib/syslinux/modules/bios not present; relying on loop above."
+          fi
           mkdir -p config/bootloaders/grub
           echo "=== config/bootloaders/isolinux contents ==="
           ls -l config/bootloaders/isolinux/ 2>&1 | tee -a install.log
