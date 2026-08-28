@@ -33,6 +33,17 @@ amd64-microcode
 libgl1-mesa-dri
 mesa-va-drivers
 libvulkan1
+# Firmware: REQUIRED for Intel iGPU (i915) and AMD GPU to initialize the
+# display. Without firmware-misc-nonfree the kernel can't bring up the
+# framebuffer -> black screen on real hardware (laptops/desktops).
+firmware-linux
+firmware-linux-nonfree
+firmware-misc-nonfree
+firmware-iwlwifi
+firmware-sof-signed
+firmware-realtek
+intel-media-va-driver
+xserver-xorg-video-intel
 # --- NVIDIA: NOT installed in the live image on purpose ---
 # nvidia-driver's module/hooks fight virtual GPUs (Proxmox/VirtualBox/QEMU) and
 # can black-screen the live boot. Real NVIDIA hardware gets it automatically on
