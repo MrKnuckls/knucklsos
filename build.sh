@@ -25,6 +25,7 @@ lb config noauto \
     --mirror-binary http://archive.ubuntu.com/ubuntu \
     --mirror-binary-security http://security.ubuntu.com/ubuntu \
     --binary-images iso-hybrid \
+    --syslinux-theme "none" \
     --bootappend-live "boot=casper username=knucklsos components quiet splash" \
     --linux-packages "linux-image" \
     --initramfs-compression gzip \
