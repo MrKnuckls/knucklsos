@@ -34,6 +34,12 @@ lb config noauto \
     --iso-volume "KnucklsOS" \
     --checksums sha256
 
+# Force NO bootloader theme. With --mode ubuntu live-build defaults the
+# syslinux theme to "ubuntu", which resolves to packages
+# (syslinux-themes-ubuntu-*, gfxboot-theme-ubuntu) that DO NOT exist in Noble,
+# killing the binary stage. We ship our own config/bootloaders/isolinux/.
+echo 'LB_SYSLINUX_THEME=""' >> config/binary
+
 echo "==> Building ISO..."
 lb build
 build_rc=$?
