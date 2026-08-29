@@ -1,0 +1,61 @@
+#!/bin/bash
+# KnucklsOS branding + desktop-icon fix (runs last so it survives postinst).
+set -e
+
+ASSETS=/usr/share/knucklsos/assets
+
+# --- Plymouth splash (boot screen) ---
+if [ -f "$ASSETS/knuckls-fist.jpg" ]; then
+  mkdir -p /usr/share/plymouth/themes/knucklsos
+  cp "$ASSETS/knuckls-fist.jpg" /usr/share/plymouth/themes/knucklsos/knuckls-fist.png 2>/dev/null || \
+    cp "$ASSETS/knuckls-fist.jpg" /usr/share/plymouth/themes/knucklsos/knuckls-fist.png
+  # plymouth wants png; convert if needed
+  if ! file /usr/share/plymouth/themes/knucklsos/knuckls-fist.png | grep -qi PNG; then
+    (command -v convert >/dev/null && convert "$ASSETS/knuckls-fist.jpg" /usr/share/plymouth/themes/knucklsos/knuckls-fist.png) || \
+      cp "$ASSETS/knuckls-fist.jpg" /usr/share/plymouth/themes/knucklsos/knuckls-fist.png
+  fi
+  plymouth-set-default-theme knucklsos 2>/dev/null || true
+  update-initramfs -u 2>/dev/null || true
+fi
+
+# --- Installer icon points at the fist art ---
+if [ -f "$ASSETS/knuckls-fist.jpg" ]; then
+  cat > /usr/share/applications/knucklsos-install.desktop <<EOF
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Install KnucklsOS
+Comment=Install KnucklsOS to this computer
+Exec=pkexec calamares
+Icon=$ASSETS/knuckls-fist.jpg
+Terminal=false
+Categories=System;
+EOF
+  cp /usr/share/applications/knucklsos-install.desktop /etc/skel/Desktop/
+  chmod +x /etc/skel/Desktop/knucklsos-install.desktop
+fi
+
+# --- Force KDE desktop to show icons (Folder View) so the installer shows ---
+mkdir -p /etc/skel/.config
+cat > /etc/skel/.config/plasma-org.kde.plasma.desktop-appletsrc <<'EOF'
+[Containments][1]
+activityId=1
+formfactor=desktop
+lastScreen=0
+location=0
+plugin=org.kde.desktopcontainment
+wallpaperplugin=org.kde.image
+Icon=start-here-kde
+
+[Containments][1][General]
+ToolBoxButtonState=1
+Show Desktop Icons=true
+
+[Containments][1][Wallpaper][org.kde.image][General]
+Image=$ASSETS/knuckls-wordmark.jpg
+EOF
+
+# Also set the default wallpaper for the live user's home
+mkdir -p /etc/skel/.local/share/wallpapers 2>/dev/null || true
+
+echo "KnucklsOS branding applied"

@@ -24,6 +24,10 @@ network-manager
 curl
 wget
 ca-certificates
+# Branding / splash
+plymouth
+plymouth-themes
+imagemagick
 # Installer: Calamares (graphical, Windows-like KDE installer)
 calamares
 calamares-settings-debian
