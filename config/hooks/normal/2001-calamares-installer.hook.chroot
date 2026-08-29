@@ -1,0 +1,38 @@
+#!/bin/bash
+# Sets up the Calamares graphical installer for the live session:
+# - desktop icon to launch "Install KnucklsOS"
+# - polkit rule so the live user can run it without a password
+set -e
+
+# Desktop icon for the installer (shows on the live desktop)
+mkdir -p /home/knucklsos/Desktop /etc/skel/Desktop
+cat > /usr/share/applications/knucklsos-install.desktop <<'EOF'
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Install KnucklsOS
+Comment=Install KnucklsOS to this computer
+Exec=pkexec calamares
+Icon=drive-harddisk
+Terminal=false
+Categories=System;
+EOF
+cp /usr/share/applications/knucklsos-install.desktop /etc/skel/Desktop/
+chmod +x /etc/skel/Desktop/knucklsos-install.desktop
+
+# Allow the live user to launch Calamares via pkexec without a password
+mkdir -p /etc/polkit-1/rules.d
+cat > /etc/polkit-1/rules.d/40-knucklsos-installer.rules <<'EOF'
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.calamares.root" &&
+        subject.user == "knucklsos" &&
+        subject.isInGroup("knucklsos")) {
+        return polkit.Result.YES;
+    }
+});
+EOF
+
+# Ensure the live user exists in its own group (created at boot by live-config)
+# so the polkit rule matches. Calamares config tweaks:
+mkdir -p /etc/calamares
+echo "Calamares installer setup done"

@@ -24,3 +24,13 @@ network-manager
 curl
 wget
 ca-certificates
+# Installer: Calamares (graphical, Windows-like KDE installer)
+calamares
+calamares-settings-debian
+qml-module-qtquick-controls
+qml-module-qtquick-extras
+# polkit lets the live user launch the installer without a password
+policykit-1
+polkitd-pkla
+libpolkit-gobject-1-0
+sudo
