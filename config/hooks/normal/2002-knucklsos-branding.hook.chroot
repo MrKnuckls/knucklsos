@@ -1,26 +1,50 @@
 #!/bin/bash
-# KnucklsOS branding + desktop-icon fix (runs last so it survives postinst).
+# KnucklsOS branding - applied via the PROPER mechanisms so it survives login.
+# 1) Set the KnucklsOS look-and-feel as the system default (wallpaper + Folder
+#    View desktop icons + green accent). /etc/skel alone gets overwritten by KDE
+#    on first login, so we use plasma-lookandfeel-tool which writes the real
+#    default that every new session inherits.
+# 2) Rebuild the initramfs WITH plymouth so the splash actually shows at boot.
+# 3) Drop the installer icon on the desktop (Folder View shows it).
 set -e
 
 ASSETS=/usr/share/knucklsos/assets
 
-# --- Plymouth splash (boot screen) ---
+# --- 1) Apply look-and-feel as default ---
+if command -v plasma-lookandfeel-tool >/dev/null 2>&1; then
+  plasma-lookandfeel-tool --apply org.knucklsos.desktop 2>/dev/null || true
+fi
+# Also set it as the global default for SDDM/new users via a profile script
+mkdir -p /etc/profile.d
+cat > /etc/profile.d/knucklsos-lookandfeel.sh <<'EOF'
+# Ensure the KnucklsOS look-and-feel is the default for any session that starts
+if command -v plasma-lookandfeel-tool >/dev/null 2>&1; then
+  plasma-lookandfeel-tool --apply org.knucklsos.desktop >/dev/null 2>&1 || true
+fi
+EOF
+
+# --- 2) Plymouth splash: rebuild initramfs with the theme image ---
+mkdir -p /usr/share/plymouth/themes/knucklsos
+# plymouth needs a PNG; convert the jpg
 if [ -f "$ASSETS/knuckls-fist.jpg" ]; then
-  mkdir -p /usr/share/plymouth/themes/knucklsos
-  cp "$ASSETS/knuckls-fist.jpg" /usr/share/plymouth/themes/knucklsos/knuckls-fist.png 2>/dev/null || \
-    cp "$ASSETS/knuckls-fist.jpg" /usr/share/plymouth/themes/knucklsos/knuckls-fist.png
-  # plymouth wants png; convert if needed
-  if ! file /usr/share/plymouth/themes/knucklsos/knuckls-fist.png | grep -qi PNG; then
-    (command -v convert >/dev/null && convert "$ASSETS/knuckls-fist.jpg" /usr/share/plymouth/themes/knucklsos/knuckls-fist.png) || \
+  if command -v convert >/dev/null 2>&1; then
+    convert "$ASSETS/knuckls-fist.jpg" /usr/share/plymouth/themes/knucklsos/knuckls-fist.png 2>/dev/null || \
       cp "$ASSETS/knuckls-fist.jpg" /usr/share/plymouth/themes/knucklsos/knuckls-fist.png
+  else
+    cp "$ASSETS/knuckls-fist.jpg" /usr/share/plymouth/themes/knucklsos/knuckls-fist.png
   fi
-  plymouth-set-default-theme knucklsos 2>/dev/null || true
-  update-initramfs -u 2>/dev/null || true
+fi
+# Set default theme and rebuild initramfs against the installed kernel
+plymouth-set-default-theme -R knucklsos 2>/dev/null || plymouth-set-default-theme knucklsos 2>/dev/null || true
+# Force the initramfs rebuild (live-build regenerates later, but this seeds it)
+LK=$(ls /boot/vmlinuz-* 2>/dev/null | head -1)
+if [ -n "$LK" ]; then
+  KVER=$(echo "$LK" | sed 's#.*vmlinuz-##')
+  update-initramfs -u -k "$KVER" 2>/dev/null || update-initramfs -u 2>/dev/null || true
 fi
 
-# --- Installer icon points at the fist art ---
-if [ -f "$ASSETS/knuckls-fist.jpg" ]; then
-  cat > /usr/share/applications/knucklsos-install.desktop <<EOF
+# --- 3) Installer icon on the desktop ---
+cat > /usr/share/applications/knucklsos-install.desktop <<EOF
 [Desktop Entry]
 Version=1.0
 Type=Application
@@ -31,31 +55,15 @@ Icon=$ASSETS/knuckls-fist.jpg
 Terminal=false
 Categories=System;
 EOF
-  cp /usr/share/applications/knucklsos-install.desktop /etc/skel/Desktop/
-  chmod +x /etc/skel/Desktop/knucklsos-install.desktop
+mkdir -p /etc/skel/Desktop
+cp /usr/share/applications/knucklsos-install.desktop /etc/skel/Desktop/
+chmod +x /etc/skel/Desktop/knucklsos-install.desktop
+
+# Also place the icon in the live user's home if it already exists
+if [ -d /home/knucklsos ]; then
+  mkdir -p /home/knucklsos/Desktop
+  cp /usr/share/applications/knucklsos-install.desktop /home/knucklsos/Desktop/ 2>/dev/null || true
+  chmod +x /home/knucklsos/Desktop/knucklsos-install.desktop 2>/dev/null || true
 fi
 
-# --- Force KDE desktop to show icons (Folder View) so the installer shows ---
-mkdir -p /etc/skel/.config
-cat > /etc/skel/.config/plasma-org.kde.plasma.desktop-appletsrc <<'EOF'
-[Containments][1]
-activityId=1
-formfactor=desktop
-lastScreen=0
-location=0
-plugin=org.kde.desktopcontainment
-wallpaperplugin=org.kde.image
-Icon=start-here-kde
-
-[Containments][1][General]
-ToolBoxButtonState=1
-Show Desktop Icons=true
-
-[Containments][1][Wallpaper][org.kde.image][General]
-Image=$ASSETS/knuckls-wordmark-os.jpg
-EOF
-
-# Also set the default wallpaper for the live user's home
-mkdir -p /etc/skel/.local/share/wallpapers 2>/dev/null || true
-
-echo "KnucklsOS branding applied"
+echo "KnucklsOS branding applied (look-and-feel default + plymouth + installer icon)"

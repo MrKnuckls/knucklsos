@@ -9,6 +9,10 @@
   "desktopSettings": {
     "org.kde.plasmashell": {
       "Shell": { "PanelBehavior": 0 }
+    },
+    "org.kde.plasma.desktop": {
+      "Containment": "org.kde.desktopcontainment",
+      "ShowDesktopIcons": true
     }
   }
 }

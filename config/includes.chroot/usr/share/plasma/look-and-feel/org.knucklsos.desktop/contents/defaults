@@ -4,9 +4,24 @@ showHelp=false
 [org.kde.plasmashell]
 Shell=org.kde.plasma.desktop
 
+[org.kde.plasma.desktop]
+# Folder View containment so desktop icons (e.g. Install KnucklsOS) show
+Containment=org.kde.desktopcontainment
+ShowDesktopIcons=true
+
+[Wallpaper]
+# Default wallpaper for the desktop
+Image=file:///usr/share/knucklsos/assets/knuckls-wordmark-os.jpg
+
 [org.kde.kdecoration2]
 BorderSize=Normal
 BorderlessMaximizedWindows=true
+# Green accent to match the KnucklsOS neon look
+accentColor=40,255,90
 
 [kwinrc]
 Plugins=blurEnabled=true
+
+[Colors]
+# Force the green accent color
+accentColor=40,255,90
