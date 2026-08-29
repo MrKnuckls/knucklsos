@@ -52,7 +52,7 @@ ToolBoxButtonState=1
 Show Desktop Icons=true
 
 [Containments][1][Wallpaper][org.kde.image][General]
-Image=$ASSETS/knuckls-wordmark.jpg
+Image=$ASSETS/knuckls-wordmark-os.jpg
 EOF
 
 # Also set the default wallpaper for the live user's home
