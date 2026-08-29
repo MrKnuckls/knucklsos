@@ -1,0 +1,26 @@
+#!/bin/bash
+# Writes SDDM autologin + startup-delay config AFTER packages install, so it
+# survives SDDM's postinst (includes.chroot files get overwritten otherwise).
+set -e
+
+mkdir -p /etc/sddm.conf.d
+cat > /etc/sddm.conf.d/knucklsos-autologin.conf <<'EOF'
+[Autologin]
+User=knucklsos
+Session=plasma.desktop
+Relogin=false
+
+[Users]
+MaximumUid=60500
+MinimumUid=1000
+EOF
+
+mkdir -p /etc/systemd/system/sddm.service.d
+cat > /etc/systemd/system/sddm.service.d/override.conf <<'EOF'
+[Service]
+# Workaround for the SDDM/Plasma black-screen race: SDDM can start before the
+# GPU/KWin is ready, leaving a black screen. Delay SDDM briefly.
+ExecStartPre=/bin/sleep 3
+EOF
+
+echo "knucklsos SDDM config written"
