@@ -1,20 +1,26 @@
-# KnucklsOS MINIMAL package list (step 1: prove it boots on real PC).
-# Just a KDE desktop + Ubuntu's live-boot (casper). No gaming/branding yet.
+# KnucklsOS v1.1 MINIMAL package list (step 1: prove it boots on real PC).
+# Just a KDE desktop + Debian's live-boot. No gaming/branding yet.
 kde-plasma-desktop
 sddm
-casper
+live-boot
+live-config
+live-tools
+systemd-sysv
 plasma-nm
 dolphin
 konsole
 breeze
 kdeconnect
-# Firmware: Ubuntu's linux-image-generic pulls linux-firmware automatically,
-# so Intel/AMD GPU + wifi firmware is present by default (fixes laptop black screen).
-linux-firmware
+# Firmware: Debian's linux-image pulls linux-firmware; explicit Intel/AMD too.
+firmware-linux
+firmware-linux-nonfree
+firmware-misc-nonfree
+firmware-iwlwifi
 intel-microcode
 amd64-microcode
+intel-media-va-driver
 # Basic utils
+network-manager
 curl
 wget
 ca-certificates
-network-manager

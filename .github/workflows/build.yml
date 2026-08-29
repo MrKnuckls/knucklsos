@@ -18,24 +18,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install real Ubuntu live-build (replace the broken fork)
+      - name: Install real Debian live-build (not the broken Ubuntu fork)
         run: |
           set -x
           sudo apt-get update 2>&1 | tee -a install.log
-          sudo apt-get install -y --no-install-recommends \
-            live-build debootstrap cpio squashfs-tools xorriso \
-            apt-utils isolinux syslinux wget ca-certificates \
-            casper 2>&1 | tee -a install.log
+          sudo apt-get install -y debootstrap cpio squashfs-tools xorriso \
+            apt-utils isolinux syslinux wget ca-certificates 2>&1 | tee -a install.log
+          # Pull the native Debian live-build from bookworm (Ubuntu's fork is
+          # broken for our use). Also need the Debian archive keyring.
+          echo 'deb [trusted=yes] http://deb.debian.org/debian bookworm main' | \
+            sudo tee /etc/apt/sources.list.d/debian-bookworm.list
+          sudo apt-get update 2>&1 | tee -a install.log
+          sudo apt-get install -y -t bookworm live-build debian-archive-keyring 2>&1 | tee -a install.log
           echo "=== live-build version ==="
           lb --version | tee -a install.log
-          # Ubuntu's --mode ubuntu sets LB_SYSLINUX_THEME to a value that
-          # resolves to missing packages (syslinux-themes-ubuntu-oneiric,
-          # gfxboot-theme-ubuntu) on Noble, killing the binary stage. Force the
-          # "live-build" theme (ships with the syslinux package, no extra pkg)
-          # which also skips the gfxboot branch and uses our config/bootloaders.
-          sudo find / -path '*/scripts/build/lb_binary_syslinux' 2>/dev/null | while read -r f; do
-            sudo sed -i 's|^# Checking depends|LB_SYSLINUX_THEME="live-build"\n\n# Checking depends|' "$f"
-            echo "patched $f"
+          # Fork bug: kernel Contents path moved to dists/<s>/main/Contents.
+          # Patch the installed script (uses ${LB_DISTRIBUTION}, not ${DIST}).
+          sudo find / -name 'lb_chroot_linux_image' 2>/dev/null | while read -r f; do
+            sudo sed -i \
+              -e 's#dists/${LB_DISTRIBUTION}/Contents-#dists/${LB_DISTRIBUTION}/main/Contents-#g' \
+              "$f"
           done
           # Ensure isolinux bits ship in the bootloaders dir (defensive copy).
           set +e
@@ -49,9 +51,8 @@ jobs:
             done
           done
           if [ -d /usr/lib/syslinux/modules/bios ]; then
-            cp -rf /usr/lib/syslinux/modules/bios/. config/bootloaders/isolinux/ && \
-              echo "copied extra syslinux modules" || \
-              echo "WARNING: could not copy syslinux modules (non-fatal)"
+            cp -rf /usr/lib/syslinux/modules/bios/. config/bootloaders/isolinux/ 2>/dev/null && \
+              echo "copied extra syslinux modules" || echo "WARNING: could not copy (non-fatal)"
           fi
           mkdir -p config/bootloaders/grub
           echo "=== config/bootloaders/isolinux contents ==="

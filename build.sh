@@ -1,6 +1,8 @@
 #!/bin/bash
-# KnucklsOS MINIMAL Ubuntu Noble live-build driver (step 1: prove it boots).
-# Tee all output to build.log so CI can surface errors.
+# KnucklsOS v1.1 (Ubuntu branch) MINIMAL Debian-mode live-build driver.
+# Debian-mode is the reliable CI engine (Noble-Ubuntu live-build is broken).
+# Goal: prove the base boots to a KDE desktop on real PC before adding gaming.
+# Boot is VISIBLE (no quiet splash) so failures show instead of black screen.
 exec > >(tee -a build.log) 2>&1
 set -euo pipefail
 
@@ -13,20 +15,21 @@ fi
 
 echo "==> live-build version:"; lb --version || true
 
-# Minimal: boot to a KDE desktop, nothing else yet.
-# --mode ubuntu uses casper (Ubuntu's reliable live-boot), signed shim path.
 lb clean 2>/dev/null || true
 lb config noauto \
-    --mode ubuntu \
-    --distribution noble \
+    --mode debian \
+    --distribution bookworm \
     --architectures amd64 \
-    --archive-areas "main restricted universe multiverse" \
-    --mirror-bootstrap http://archive.ubuntu.com/ubuntu \
-    --mirror-binary http://archive.ubuntu.com/ubuntu \
-    --mirror-binary-security http://security.ubuntu.com/ubuntu \
+    --archive-areas "main contrib non-free non-free-firmware" \
+    --parent-archive-areas "main contrib non-free non-free-firmware" \
+    --mirror-bootstrap http://deb.debian.org/debian \
+    --mirror-binary http://deb.debian.org/debian \
+    --mirror-binary-security http://deb.debian.org/debian-security \
+    --security false \
+    --apt-indices false \
+    --apt-recommends true \
     --binary-images iso-hybrid \
-    --syslinux-theme "" \
-    --bootappend-live "boot=casper username=knucklsos components quiet splash" \
+    --bootappend-live "boot=live components username=knucklsos" \
     --linux-packages "linux-image" \
     --initramfs-compression gzip \
     --iso-application "KnucklsOS" \
@@ -34,23 +37,16 @@ lb config noauto \
     --iso-volume "KnucklsOS" \
     --checksums sha256
 
-# Force NO bootloader theme. With --mode ubuntu live-build defaults the
-# syslinux theme to "ubuntu", which resolves to packages
-# (syslinux-themes-ubuntu-*, gfxboot-theme-ubuntu) that DO NOT exist in Noble,
-# killing the binary stage. We ship our own config/bootloaders/isolinux/.
-echo 'LB_SYSLINUX_THEME=""' >> config/binary
-
 echo "==> Building ISO..."
 lb build
 build_rc=$?
 
 echo "==> Done. Renaming ISO..."
-# Version label follows the branch: main -> v1.0, ubuntu -> v1.1, else vX.Y from branch.
 BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
 case "$BRANCH" in
-  main)        VER="v1.0" ;;
-  ubuntu)      VER="v1.1" ;;
-  *)           VER="$BRANCH" ;;
+  main)   VER="v1.0" ;;
+  ubuntu) VER="v1.1" ;;
+  *)      VER="$BRANCH" ;;
 esac
 if [ "$build_rc" -eq 0 ]; then
   for iso in *.iso; do
