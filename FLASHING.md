@@ -1,92 +1,19 @@
 # Flashing KnucklsOS to a USB Stick
 
-Once the GitHub Actions build finishes, you'll get a `knucklsos-*.iso`
-artifact. This guide explains how to put it on a USB stick and boot it.
+This guide explains how to put the `knucklsos-v1.1.iso` file onto a USB stick
+and boot it. The ISO is a **single file** (about 2.0 GB) — no splitting or
+joining needed.
 
 > **What you're flashing:** a live KnucklsOS image (Debian + KDE Plasma,
-> Windows-11-style desktop, with Steam / Lutris / Wine / GameMode / MangoHUD
-> pre-loaded). You can try it straight from the USB, or install it to your
-> hard drive from the desktop.
-
----
-
-## 0. Rejoin the split ISO first (important!)
-
-The ISO is **~2.9 GB**, but GitHub only lets us upload files up to 2 GB each, so we
-had to split it into **two** halves:
-
-- `knucklsos-20260827.iso.part00`  (first half, ~1.5 GB)
-- `knucklsos-20260827.iso.part01`  (second half, ~1.4 GB)
-
-**What "rejoin" means:** the ISO is one big file that got cut in half for download.
-You need to glue the two halves back together into a single `knucklsos-20260827.iso`
-before you can flash it. Flashing a `.part00` file by itself will **not** work — the
-USB won't boot.
-
-**Step by step:**
-
-1. Download **both** `part00` and `part01` into the **same folder**.
-2. Glue them together with the command for your operating system (below).
-3. You'll get one new file: `knucklsos-20260827.iso` (~2.9 GB). That's the file you flash.
-
-### ▸ If you're on Windows
-1. Download **both** parts into the **same folder** (e.g. your `Downloads` folder).
-2. Open a command window — either works:
-   - **Command Prompt:** Click **Start** → type `cmd` → open **Command Prompt**, **or**
-   - **PowerShell:** Click **Start** → type `powershell` → open **Windows PowerShell**.
-   (The command in step 4 uses `cmd /c` so it works in BOTH — you don't need to pick one.)
-3. Go to that folder (change `Downloads` to wherever you saved the files):
-   ```cmd
-   REM If you used the default Downloads folder, use this:
-   cd /d %USERPROFILE%\Downloads
-
-   REM Or use the literal path (replace YourName with your Windows username):
-   cd /d C:\Users\YourName\Downloads
-   ```
-   (The `/d` tells cmd it's OK to change drives too. If the `cd` says "The system
-   cannot find the path", your files are somewhere else — run `dir` to see what's in
-   the current folder, or browse to the right path.)
-4. Run this single command to glue the two parts into one `.iso`:
-   ```cmd
-   cmd /c copy /b knucklsos-20260827.iso.part00 + knucklsos-20260827.iso.part01 knucklsos-20260827.iso
-   ```
-   You should see `1 file(s) copied`. That `knucklsos-20260827.iso` (~2.9 GB) is your
-   flashable image.
-
-   > **Why `cmd /c`?** Windows 11 often opens PowerShell instead of Command Prompt, and
-   > in PowerShell the plain `copy` command is really `Copy-Item`, which rejects `/b`
-   > and `+` (that's the "positional parameter / invalid argument" error you may have
-   > hit). Wrapping it in `cmd /c` forces Windows to run the real Command Prompt `copy`,
-   > which joins the files byte-for-byte.
-
-   > **Troubleshooting:** if it says the file is in use or "Access is denied", close any
-   > program reading the parts, then right-click the command window → **Run as
-   > administrator** and try again. If it says it can't find the files, double-check
-   > you're in the right folder (step 3) — run `dir` to list what's there.
-
-### ▸ If you're on macOS or Linux
-1. Open the **Terminal** (macOS: Applications → Utilities → Terminal).
-2. Go to the folder with the two parts, e.g.:
-   ```bash
-   cd ~/Downloads
-   ```
-3. Run this single command:
-   ```bash
-   cat knucklsos-20260827.iso.part00 knucklsos-20260827.iso.part01 > knucklsos-20260827.iso
-   ```
-
-### ▸ How to check it worked
-- The new `knucklsos-20260827.iso` should be about **2.9 GB** (roughly 3,103,784,960 bytes).
-- If it's only ~1.5 GB, you probably only had `part00` — re-download **both** parts
-  and try again.
-- The file should end in `.iso` (not `.part00` or `.part01`). That `.iso` is what you
-  use in the next steps.
+> Windows-11-style desktop, with the KnucklsOS fist splash and wallpaper).
+> You can try it straight from the USB, or install it to your hard drive from
+> the desktop.
 
 ---
 
 ## 1. What you need
 
-- A USB stick — **8 GB minimum, 16 GB recommended** (the ISO is ~2.9 GB).
+- A USB stick — **8 GB minimum, 16 GB recommended**.
 - A tool to write the ISO (pick one below).
 - Back up anything important on that USB — it gets wiped.
 
@@ -94,112 +21,110 @@ USB won't boot.
 
 ## 2. Write the ISO to USB (pick one)
 
-> Use the recombined `knucklsos-20260827.iso` from Step 0 — not the `.part00` / `.part01` files.
-
-### Option A — Ventoy (recommended, easiest)
-1. Download Ventoy from https://ventoy.net and install it to your USB stick
-   (this formats the stick once).
-2. Copy the `knucklsos-20260827.iso` file onto the stick like a normal file.
-3. Done — no imaging step. You can keep many ISOs on the same stick.
-
-### Option B — BalenaEtcher (simple GUI)
+### Option A — BalenaEtcher (recommended, simplest)
 1. Get BalenaEtcher from https://etcher.balena.io.
-2. Open it, select the `knucklsos-20260827.iso`, select your USB stick, click Flash.
-3. Wait for "Flash complete" + validation.
+2. Open it, click **Flash from file**, select `knucklsos-v1.1.iso`.
+3. Select your USB stick, click **Flash**.
+4. Wait for "Flash complete" + validation. Done.
 
-### Option C — `dd` (command line, powerful but unforgiving)
-> Triple-check the device name — `dd` will erase whatever disk you point it at.
+### Option B — Rufus (Windows)
+1. Get Rufus from https://rufus.ie.
+2. Device = your USB stick.
+3. **Boot selection** = `knucklsos-v1.1.iso`.
+4. **Partition scheme** = **GPT**, **Target system** = **UEFI (non CSM)**.
+   (This makes the stick boot in UEFI mode, which the installer needs.)
+5. Click **START**, wait for it to finish.
+
+### Option C — Ventoy
+1. Download Ventoy from https://ventoy.net and install it to your USB stick
+   (formats the stick once).
+2. Copy `knucklsos-v1.1.iso` onto the stick like a normal file.
+3. Done — no imaging step.
+
+### Option D — `dd` (Linux/macOS command line — powerful but unforgiving)
+> Triple-check the device name — `dd` erases whatever disk you point it at.
 
 ```bash
 # List disks and find your USB (e.g. /dev/sdX — NOT your main drive!)
 lsblk
 
 # Write the ISO (replace sdX with your USB device, NOT a partition like sdX1)
-sudo dd if=knucklsos-20260827.iso of=/dev/sdX bs=4M status=progress oflag=sync
+sudo dd if=knucklsos-v1.1.iso of=/dev/sdX bs=4M status=progress oflag=sync
 ```
+
+**How to check it worked:** the USB stick should now show a bootable volume,
+and the file `knucklsos-v1.1.iso` you wrote was ~2.0 GB. If the stick doesn't
+boot, re-flash with BalenaEtcher or Rufus (GPT/UEFI) and try again.
 
 ---
 
 ## 3. Boot from the USB
 
 1. Plug the stick into the target PC.
-2. Power on and open the boot menu (usually **F12 / F11 / Esc / F8** at startup —
-   varies by manufacturer).
-3. Pick the USB stick.
-4. If it doesn't show, go into the BIOS/UEFI setup and:
-   - Make sure **USB boot** is enabled.
-   - If booting fails with a black screen, try disabling **Secure Boot**
-     (KnucklsOS uses a standard kernel; Secure Boot can block unsigned
-     bootloaders on some machines).
-5. KnucklsOS boots to a live desktop as the user **`knucklsos`** (no password).
+2. Power on and open the **boot menu** (usually **F12 / F11 / Esc / F8** at
+   startup — varies by manufacturer). On a Dell, tap **F12**.
+3. In the boot list, pick the entry that says **"UEFI: <your USB stick>"**
+   (e.g. "UEFI: General USB Flash Disk"). **Do NOT pick the plain "USB" entry**
+   — that's legacy/CSM mode and the installer will fail.
+4. KnucklsOS boots to a live desktop as the user **`knucklsos`** (no password).
+   You'll see the fist splash during boot.
+
+> **Secure Boot:** leave it ON. KnucklsOS ships a signed bootloader (shim +
+> signed GRUB), so it boots with Secure Boot enabled. No need to disable it.
 
 ---
 
-## 4. First boot & installing
+## 4. Install to the hard drive
 
-**Try it live:** Everything works from the USB — log into Steam, launch a
-game, test your hardware. Nothing is written to your hard drive until you
-install.
+1. On the live desktop, double-click the **"Install KnucklsOS"** icon (the fist
+   logo). This launches **Calamares**, the installer.
+   - If double-clicking does nothing, open a terminal (Konsole) and run
+     `sudo calamares`.
+2. Follow the steps: language → keyboard → **partitions** → user account →
+   summary → install.
+3. On the **Partitions** screen, choose **"Erase disk"** and select your
+   internal drive (on a Dell Latitude E7270 this is the **238 GB NVMe**
+   (`nvme0n1`)). This wipes the whole drive and installs KnucklsOS.
+4. When it finishes, it asks to restart. **Remove the USB stick**, then reboot.
+5. The PC boots into the installed KnucklsOS on the hard drive.
 
-**Install to the hard drive:**
-- Double-click the **"Install KnucklsOS"** icon on the desktop (this launches
-  **Calamares**, the installer).
-- Follow the steps: language → disk → user account → install.
-- When it finishes, reboot and remove the USB.
-
-**First boot after install:**
-- A one-time setup runs: joins you to the `gamemode` group, sets the hostname,
-  and enables the GPU auto-detect service.
-- Log into **Steam** — your library and Proton (Steam Play) are pre-configured
-  so most Windows games "just work."
-- **GPU auto-detect:** on first login KnucklsOS checks your graphics card:
-  - **AMD / Intel** → Mesa drivers are already active.
-  - **NVIDIA** → the recommended `nvidia-driver` is installed automatically
-    (this is fetched on first boot, not baked into the ISO, to keep the image
-    smaller and version-correct). A reboot applies it.
+**How to check it worked:** after removing the USB and rebooting, you should
+land on the KnucklsOS desktop (fist splash → KDE desktop) and NOT see the USB
+installer again. If it boots back to the installer, the USB is still in — pull
+it out and reboot.
 
 ---
 
 ## 5. Quick tips
 
-- **GameMode:** press the GameMode key combo (or launch a game via Steam with
-  GameMode enabled) to temporarily optimize the system for gaming.
-- **MangoHUD:** overlay FPS/CPU/GPU stats — enable per-game in Steam launch
-  options: `mangohud %command%`.
-- **Flatpak:** Gnome Software is included for installing extra apps.
+- **Live user:** `knucklsos`, no password. When you install, you create your
+  own user + password during the Calamares "user account" step.
+- **Branding:** the fist boot splash, "KNUCKLS OS" wallpaper, and installer
+  icon are part of v1.1.
 
 ---
 
 ## 6. Honest caveats
 
-- **Anti-cheat games:** a small number of titles using kernel-level anti-cheat
-  (e.g. Valorant, some games with BattlEye / EAC that haven't enabled Linux
-  support) will **not** run on Linux. The vast majority of Steam games do.
-- **NVIDIA:** the driver installs on first boot; if you have an NVIDIA GPU,
-  expect one extra reboot after the first login.
+- **Boot mode matters:** the installer only succeeds in **UEFI** mode. If you
+  boot the USB the legacy way, Calamares fails at the bootloader step. Always
+  pick the **"UEFI:"** USB entry in the boot menu.
 - **ISO not runtime-tested in a VM here:** the build is produced by GitHub's
-  cloud runners. If anything misbehaves on your hardware, tell me and I'll
-  adjust the config.
+  cloud runners and verified on the author's Dell Latitude E7270 (UEFI, Secure
+  Boot ON). If anything misbehaves on your hardware, report it and the config
+  gets adjusted.
 
 ---
 
 ## 7. Where the ISO comes from
 
 The ISO is built automatically by GitHub Actions (`.github/workflows/build.yml`)
-using **native Debian live-build** in Debian mode. Every push to `main` rebuilds it.
+using **native Debian live-build** in Debian mode. Every push to the `ubuntu`
+branch rebuilds it.
 
 **Get the ISO:**
 
-- **Release (recommended, permanent):** the latest stable build is on the
-  Releases page as two split chunks (GitHub caps release assets at 2 GB, and the
-  ISO is ~2.9 GB):
-  https://github.com/MrKnuckls/knucklsos/releases
-  Download `knucklsos-20260827.iso.part00` **and** `knucklsos-20260827.iso.part01`,
-  then rejoin them into one ISO:
-  ```bash
-  cat knucklsos-20260827.iso.part00 knucklsos-20260827.iso.part01 > knucklsos-20260827.iso
-  ```
-  (After that, `knucklsos-20260827.iso` is your flashable image.)
-- **Actions artifact (temporary, ~30-day expiry):** each build also uploads a
-  single `knucklsos-iso` artifact from the Actions tab:
+- **Release (recommended, permanent):** https://github.com/MrKnuckls/knucklsos/releases
+  Download `knucklsos-v1.1.iso` (single file, ~2.0 GB).
+- **Actions artifact (temporary, ~30-day expiry):**
   https://github.com/MrKnuckls/knucklsos/actions
