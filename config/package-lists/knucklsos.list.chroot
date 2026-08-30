@@ -29,10 +29,11 @@ plymouth
 plymouth-themes
 imagemagick
 # Installer: Calamares (graphical, Windows-like KDE installer)
-# NOTE: do NOT use calamares-settings-debian - it hardcodes BIOS grub-pc and
-# overrides EFI, breaking installs on UEFI/Secure-Boot machines. We ship our
-# own settings.conf + bootloader.conf via the branding hook instead.
+# Keep calamares-settings-debian - it provides the unpackfs/fstab/sequence
+# configs tuned for Debian live. We ONLY override bootloader.conf (EFI) via
+# the branding hook, not remove the whole package (removing it broke unpackfs).
 calamares
+calamares-settings-debian
 qml-module-qtquick-controls
 qml-module-qtquick-extras
 # Bootloader packages Calamares needs to install to HDD (UEFI + Secure Boot)
