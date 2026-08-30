@@ -33,6 +33,12 @@ calamares
 calamares-settings-debian
 qml-module-qtquick-controls
 qml-module-qtquick-extras
+# Bootloader packages Calamares needs to install to HDD (UEFI + Secure Boot)
+grub-efi-amd64
+grub-efi-amd64-signed
+shim-signed
+efibootmgr
+grub-common
 # polkit lets the live user launch the installer without a password
 policykit-1
 polkitd-pkla

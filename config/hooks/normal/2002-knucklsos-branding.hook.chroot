@@ -66,4 +66,24 @@ if [ -d /home/knucklsos ]; then
   chmod +x /home/knucklsos/Desktop/knucklsos-install.desktop 2>/dev/null || true
 fi
 
-echo "KnucklsOS branding applied (look-and-feel default + plymouth + installer icon)"
+# --- 4) Calamares bootloader config: Debian EFI + Secure Boot (shim/grub-efi) ---
+mkdir -p /etc/calamares/modules
+cat > /etc/calamares/modules/bootloader.conf <<'EOF'
+---
+# EFI bootloader for UEFI systems (Secure Boot via shim-signed + grub-efi-amd64-signed)
+efiBootLoader: "grub"
+
+# Debian kernel/initramfs paths (NOT Arch-style)
+kernel: "/vmlinuz"
+img: "/initrd.img"
+timeout: "10"
+
+grubInstall: "grub-install"
+grubMkconfig: "grub-mkconfig"
+grubCfg: "/boot/grub/grub.cfg"
+grubProbe: "grub-probe"
+efiBootMgr: "efibootmgr"
+installEFIFallback: true
+EOF
+
+echo "KnucklsOS branding applied (look-and-feel default + plymouth + installer icon + bootloader cfg)"
