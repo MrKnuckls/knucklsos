@@ -11,7 +11,7 @@ ShowDesktopIcons=true
 
 [Wallpaper]
 # Default wallpaper for the desktop
-Image=file:///usr/share/knucklsos/assets/knuckls-wordmark-os.jpg
+Image=file:///usr/share/knucklsos/assets/knuckls-k.jpg
 
 [org.kde.kdecoration2]
 BorderSize=Normal
