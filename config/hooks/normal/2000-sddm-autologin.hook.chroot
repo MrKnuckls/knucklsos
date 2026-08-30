@@ -1,19 +1,12 @@
 #!/bin/bash
-# Writes SDDM autologin + startup-delay config AFTER packages install, so it
-# survives SDDM's postinst (includes.chroot files get overwritten otherwise).
+# Writes SDDM startup-delay config AFTER packages install, so it survives
+# SDDM's postinst (includes.chroot files get overwritten otherwise).
+# NOTE: we deliberately do NOT set a hardcoded [Autologin] User=knucklsos here.
+# On the live USB, autologin is handled by live-config (username=knucklsos boot
+# param). On the INSTALLED system Calamares creates the user YOU chose, so a
+# hardcoded knucklsos autologin would point at a nonexistent user and black-screen.
+# The 3s sleep is the real fix for the SDDM/Plasma black-screen race.
 set -e
-
-mkdir -p /etc/sddm.conf.d
-cat > /etc/sddm.conf.d/knucklsos-autologin.conf <<'EOF'
-[Autologin]
-User=knucklsos
-Session=plasma.desktop
-Relogin=false
-
-[Users]
-MaximumUid=60500
-MinimumUid=1000
-EOF
 
 mkdir -p /etc/systemd/system/sddm.service.d
 cat > /etc/systemd/system/sddm.service.d/override.conf <<'EOF'
@@ -23,4 +16,4 @@ cat > /etc/systemd/system/sddm.service.d/override.conf <<'EOF'
 ExecStartPre=/bin/sleep 3
 EOF
 
-echo "knucklsos SDDM config written"
+echo "knucklsos SDDM delay config written"
