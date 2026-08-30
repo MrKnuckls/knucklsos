@@ -43,14 +43,14 @@ if [ -n "$LK" ]; then
   update-initramfs -u -k "$KVER" 2>/dev/null || update-initramfs -u 2>/dev/null || true
 fi
 
-# --- 3) Installer icon on the desktop ---
+# --- 3) Installer icon on the desktop (launches passwordless as root) ---
 cat > /usr/share/applications/knucklsos-install.desktop <<EOF
 [Desktop Entry]
 Version=1.0
 Type=Application
 Name=Install KnucklsOS
 Comment=Install KnucklsOS to this computer
-Exec=pkexec calamares
+Exec=sudo calamares
 Icon=$ASSETS/knuckls-fist.jpg
 Terminal=false
 Categories=System;
@@ -58,6 +58,10 @@ EOF
 mkdir -p /etc/skel/Desktop
 cp /usr/share/applications/knucklsos-install.desktop /etc/skel/Desktop/
 chmod +x /etc/skel/Desktop/knucklsos-install.desktop
+
+# Passwordless sudo for the live user so the installer launches without a prompt
+echo "knucklsos ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/knucklsos
+chmod 440 /etc/sudoers.d/knucklsos
 
 # Also place the icon in the live user's home if it already exists
 if [ -d /home/knucklsos ]; then
