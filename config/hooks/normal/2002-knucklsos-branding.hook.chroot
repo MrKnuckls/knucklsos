@@ -23,6 +23,29 @@ if command -v plasma-lookandfeel-tool >/dev/null 2>&1; then
 fi
 EOF
 
+# --- 1b) Autostart script: force the Win11 look-and-feel on EVERY graphical
+# login (profile.d is not sourced by the KDE graphical session, so the panel
+# otherwise stays at the distro default). Runs once-per-login, idempotent.
+mkdir -p /etc/xdg/autostart /usr/share/knucklsos
+cat > /usr/share/knucklsos/apply-lookandfeel.sh <<'EOF'
+#!/bin/bash
+# Apply the KnucklsOS look-and-feel (wallpaper, centered taskbar, green accent)
+# on every login so it survives KDE's default-panel reset.
+if command -v plasma-lookandfeel-tool >/dev/null 2>&1; then
+  plasma-lookandfeel-tool --apply org.knucklsos.desktop >/dev/null 2>&1 || true
+fi
+EOF
+chmod +x /usr/share/knucklsos/apply-lookandfeel.sh
+cat > /etc/xdg/autostart/knucklsos-lookandfeel.desktop <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=KnucklsOS Look-and-Feel
+Comment=Apply the KnucklsOS Windows-11 style on login
+Exec=/usr/share/knucklsos/apply-lookandfeel.sh
+OnlyShowIn=KDE;
+X-GNOME-Autostart-enabled=true
+EOF
+
 # --- 2) Plymouth splash: rebuild initramfs with the theme image ---
 mkdir -p /usr/share/plymouth/themes/knucklsos
 # plymouth needs a PNG; convert the jpg
