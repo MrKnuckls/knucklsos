@@ -66,14 +66,33 @@ if [ -d /home/knucklsos ]; then
   chmod +x /home/knucklsos/Desktop/knucklsos-install.desktop 2>/dev/null || true
 fi
 
-# --- 4) Calamares bootloader config: Debian EFI + Secure Boot (shim/grub-efi) ---
+# --- 4) Calamares config: force EFI grub + shim (no BIOS grub-pc) ---
 mkdir -p /etc/calamares/modules
+# Full settings.conf so we don't rely on calamares-settings-debian defaults
+cat > /etc/calamares/settings.conf <<'EOF'
+---
+modules:
+    - welcome
+    - locale
+    - keyboard
+    - partition
+    - users
+    - summary
+    - install
+    - bootloader
+    - finished
+    - uninstall
+    - removeuser
+firmwareType: "efi"
+EOF
+
 cat > /etc/calamares/modules/bootloader.conf <<'EOF'
 ---
-# EFI bootloader for UEFI systems (Secure Boot via shim-signed + grub-efi-amd64-signed)
+# EFI-only bootloader. We ship grub-efi-amd64-signed + shim-signed in the ISO,
+# so the install works on UEFI/Secure-Boot machines. BIOS (grub-pc) is NOT used.
 efiBootLoader: "grub"
 
-# Debian kernel/initramfs paths (NOT Arch-style)
+# Debian kernel/initramfs paths
 kernel: "/vmlinuz"
 img: "/initrd.img"
 timeout: "10"
@@ -86,4 +105,7 @@ efiBootMgr: "efibootmgr"
 installEFIFallback: true
 EOF
 
-echo "KnucklsOS branding applied (look-and-feel default + plymouth + installer icon + bootloader cfg)"
+# Remove any stray Debian settings that force BIOS grub-pc
+rm -f /etc/calamares/modules/bootloader.conf.pc 2>/dev/null || true
+
+echo "KnucklsOS branding applied (look-and-feel default + plymouth + installer icon + EFI bootloader cfg)"
