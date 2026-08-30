@@ -70,7 +70,7 @@ if [ -d /home/knucklsos ]; then
   chmod +x /home/knucklsos/Desktop/knucklsos-install.desktop 2>/dev/null || true
 fi
 
-# --- 4) Calamares: override ONLY bootloader.conf to force EFI grub + shim ---
+# --- 4) Calamares: override bootloader.conf to force EFI grub + shim ---
 # (calamares-settings-debian provides the rest: unpackfs/fstab/sequence.)
 mkdir -p /etc/calamares/modules
 cat > /etc/calamares/modules/bootloader.conf <<'EOF'
@@ -92,4 +92,23 @@ efiBootMgr: "efibootmgr"
 installEFIFallback: true
 EOF
 
-echo "KnucklsOS branding applied (look-and-feel default + plymouth + installer icon + EFI bootloader cfg)"
+# --- 5) Calamares packages.conf: only purge packages that are actually
+# installed. The Debian default lists live-task-* which we don't ship, and
+# apt fails (code 100) trying to purge missing packages -> "Package Manager
+# error". Rewrite with only the live packages present in our image.
+cat > /etc/calamares/modules/packages.conf <<'EOF'
+backend: apt
+
+operations:
+  - remove:
+      - 'live-boot'
+      - 'live-boot-doc'
+      - 'live-config'
+      - 'live-config-doc'
+      - 'live-config-systemd'
+      - 'live-tools'
+      - 'calamares'
+      - 'calamares-settings-debian'
+EOF
+
+echo "KnucklsOS branding applied (look-and-feel default + plymouth + installer icon + EFI bootloader cfg + packages cleanup)"
