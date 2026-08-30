@@ -11,18 +11,22 @@ installer.
 
 ## What it is right now (v1.1)
 
-- **Base:** Debian 12 (Bookworm), KDE Plasma desktop, Windows-11-style theme.
+- **Base:** Debian 12 (Bookworm), KDE Plasma desktop, **Windows 11–style** theme.
 - **Boot:** UEFI with **Secure Boot supported** (no need to turn it off).
+- **Loading screen:** "KNUCKLS OS" wordmark with a fluorescent-green spinner
+  (Windows 11–style boot splash).
+- **Desktop:** armored-K wallpaper, **centered taskbar**, fluorescent-green
+  accent, rounded window corners.
 - **Installer:** Calamares — double-click "Install KnucklsOS" on the desktop,
   pick your drive, done.
-- **Branding:** fist boot splash (Plymouth), "KNUCKLS OS" wallpaper, Knuckls
-  fist installer icon.
+- **Branding:** fist boot splash art, "KNUCKLS OS" wordmark (your 3 uploaded
+  logos), installer icon.
 - **Live user:** `knucklsos`, no password — boots straight to the desktop.
 
 **Coming next (not yet in v1.1):** the gaming stack — Steam, Lutris, Wine,
 Proton-GE, GameMode, MangoHUD, and automatic GPU driver detection. The base
-OS + installer are done and tested on real hardware (Dell Latitude E7270,
-UEFI, Secure Boot ON).
+OS + installer + Windows-11 styling are done and tested on real hardware (Dell
+Latitude E7270, UEFI, Secure Boot ON).
 
 ---
 

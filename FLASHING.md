@@ -97,10 +97,11 @@ it out and reboot.
 
 ## 5. Quick tips
 
+- **Branding:** the boot splash shows the "KNUCKLS OS" wordmark with a green
+  spinner (Windows 11–style). The desktop uses the armored-K wallpaper, a
+  centered taskbar, and a fluorescent-green accent.
 - **Live user:** `knucklsos`, no password. When you install, you create your
   own user + password during the Calamares "user account" step.
-- **Branding:** the fist boot splash, "KNUCKLS OS" wallpaper, and installer
-  icon are part of v1.1.
 
 ---
 
