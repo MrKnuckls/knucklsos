@@ -10,18 +10,25 @@ Containment=org.kde.desktopcontainment
 ShowDesktopIcons=true
 
 [Wallpaper]
-# Default wallpaper for the desktop
+# Default wallpaper for the desktop (armored K)
 Image=file:///usr/share/knucklsos/assets/knuckls-k.jpg
 
 [org.kde.kdecoration2]
 BorderSize=Normal
 BorderlessMaximizedWindows=true
-# Green accent to match the KnucklsOS neon look
-accentColor=40,255,90
+# Fluorescent green accent to match the KnucklsOS neon look (Win11-style accent)
+accentColor=0,255,90
 
 [kwinrc]
 Plugins=blurEnabled=true
+# Rounded window corners (Win11 feel)
+Plugins=kwin4_effect_shapecornersEnabled=true
 
 [Colors]
 # Force the green accent color
-accentColor=40,255,90
+accentColor=0,255,90
+
+[Layout]
+# Reference to the default layout shipped with this look-and-feel.
+# This gives us a centered Windows 11-style taskbar.
+layoutFile=org.kde.plasma.desktop-layout.js
